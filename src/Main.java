@@ -27,17 +27,22 @@ class Task {
 public class Main {
     public static void main(String[] args) {
 
-        String filePath = "C:/Users/tc110/Dropbox/Prog/todoapp/todolist.txt";
-        File todolist = new File("C:/Users/tc110/Dropbox/Prog/todoapp/todolist.txt");
+        String fileName = "todolist.txt";
+        File todolist = new File(fileName);
 
         ArrayList<Task> taskList = new ArrayList<Task>();
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(todolist))) {
+        try {
+            if (!todolist.exists()) {
+                todolist.createNewFile();
+            }
+            BufferedReader reader = new BufferedReader(new FileReader(todolist));
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] taskData = line.split(" - ");
                 taskList.add(new Task(taskData[0], Boolean.parseBoolean(taskData[1])));
             }
+            reader.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -111,12 +116,16 @@ public class Main {
             }
 
             else if (userInput.equals("list")) {
-                for (Task element : taskList) {
-                    if(element.isComplete){
-                        System.out.println(element.name + " - is complete");
-                    }
-                    else {
-                        System.out.println(element.name + " - not complete");
+                if (taskList.size() == 0) {
+                    System.out.println("Your to do list is empty. Please add an item to your list, using the 'add' command!");
+                } else {
+                    for (Task element : taskList) {
+                        if(element.isComplete){
+                            System.out.println(element.name + " - is complete");
+                        }
+                        else {
+                            System.out.println(element.name + " - not complete");
+                        }
                     }
                 }
             }
