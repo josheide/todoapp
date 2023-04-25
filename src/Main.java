@@ -9,11 +9,6 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 
-/**
- * For my array to take two value, a string and a boolean I created a class 'Task'
- * Task class has a constructor method, which takes two arguments: name and isComplete.
- */
-
 class Task {
     String name;
     boolean isComplete;
@@ -27,7 +22,7 @@ class Task {
 public class Main {
     public static void main(String[] args) {
 
-        String fileName = "todolist.txt";
+        String fileName = "todoListFile.txt";
         File todolist = new File(fileName);
 
         ArrayList<Task> taskList = new ArrayList<Task>();
@@ -61,8 +56,8 @@ public class Main {
         while (!userInput.equals("exit")) {
 
             System.out.println(" ");
-            System.out.println("Please type what you would like to do now: ");
-            System.out.println("If you would like to save your tasks and exit the app, type: 'exit'");
+            System.out.print("Enter a task (or 'exit' to quit): ");
+
 
             userInput = scanner.nextLine();
 
@@ -132,8 +127,10 @@ public class Main {
 
             else if (userInput.equals("exit")) {
 
+                String filePath = "todoListFile.txt";
+
                 try {
-                    BufferedWriter writer = new BufferedWriter(new FileWriter("C:/Users/tc110/Dropbox/Prog/todoapp/todolist.txt"));
+                    BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
                     for (Task task : taskList) {
                         writer.write(task.name + " - " + task.isComplete + "\n");
                     }
@@ -143,8 +140,6 @@ public class Main {
                     System.out.println("An error occurred.");
                     e.printStackTrace();
                 }
-
-                userInput = "exit";
             }
 
             else {
