@@ -9,16 +9,6 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 
-class Task {
-    String name;
-    boolean isComplete;
-
-    Task(String name, boolean isComplete) {
-        this.name = name;
-        this.isComplete = isComplete;
-    }
-}
-
 public class Main {
     public static void main(String[] args) {
 
@@ -26,6 +16,7 @@ public class Main {
         File todolist = new File(fileName);
 
         ArrayList<Task> taskList = new ArrayList<Task>();
+
 
         try {
             if (!todolist.exists()) {
@@ -35,38 +26,36 @@ public class Main {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] taskData = line.split(" - ");
-                taskList.add(new Task(taskData[0], Boolean.parseBoolean(taskData[1])));
+                taskList.add(new Task(taskData[0], Boolean.parseBoolean(taskData[1]),taskData[2]));
             }
             reader.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        String userInput = " ";
-
         Scanner scanner = new Scanner(System.in);
         System.out.println("In this app you can manage your to-do list! Here's how it works:");
         System.out.println(" ");
         System.out.println("- You can add tasks to your to do list by typing: 'add' ");
         System.out.println("- You can remove items from your to do list by typing: 'delete' ");
-        System.out.println("- You  can ask the program to show your to do list by typing: 'list' ");
+        System.out.println("- You  can ask  the program to show your to do list by typing: 'list' ");
         System.out.println("- You can complete a task by typing 'complete' ");
         System.out.println("");
 
-        while (!userInput.equals("exit")) {
-
-            System.out.println(" ");
-            System.out.print("Enter a task (or 'exit' to quit): ");
-
-
-            userInput = scanner.nextLine();
+        while (true) {
+            System.out.print("Enter a task (or 'exit' to save and exit): ");
+            String userInput = scanner.nextLine();
 
             if (userInput.equals("add")) {
 
                 System.out.println("Please type the task that you would like to add!");
                 String userTask = scanner.nextLine();
-                taskList.add (new Task(userTask, false));
-                System.out.println (userTask + " has been added!");
+
+                System.out.println("Please type the name of the user the task is assigned to!");
+                String userAssigned = scanner.nextLine();
+
+                taskList.add(new Task(userTask, false, userAssigned));
+                System.out.println(userTask + " has been added!");
             }
 
             else if (userInput.equals("delete")) {
@@ -111,19 +100,29 @@ public class Main {
             }
 
             else if (userInput.equals("list")) {
+                boolean listAllTasks = true;
+
                 if (taskList.size() == 0) {
                     System.out.println("Your to do list is empty. Please add an item to your list, using the 'add' command!");
                 } else {
+                    System.out.println("Please enter your name: ");
+                    String userName = scanner.nextLine();
+                    if (!userName.isEmpty()) {
+                        listAllTasks = false;
+                    }
                     for (Task element : taskList) {
-                        if(element.isComplete){
-                            System.out.println(element.name + " - is complete");
-                        }
-                        else {
-                            System.out.println(element.name + " - not complete");
+                        if (listAllTasks || element.assignedToUser.equals(userName)) {
+                            if (element.isComplete) {
+                                System.out.println(element.name + " - completed by " + element.assignedToUser);
+                                System.out.println(" ");
+                            } else {
+                                System.out.println(element.name + " - incomplete, assigned to " + element.assignedToUser);
+                            }
                         }
                     }
                 }
             }
+
 
             else if (userInput.equals("exit")) {
 
@@ -132,14 +131,15 @@ public class Main {
                 try {
                     BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
                     for (Task task : taskList) {
-                        writer.write(task.name + " - " + task.isComplete + "\n");
+                        writer.write(task.name + " - " + task.isComplete + " - " + task.assignedToUser + "\n");
                     }
-                    writer.close();
-                    System.out.println("Tasks written to file.");
-                } catch (IOException e) {
-                    System.out.println("An error occurred.");
+                    writer.close(); // VERY IMPORTANT, otherwise the save is not complete
+
+                } catch (Exception e) {
+                    System.out.println("An error occurred while writing to the file.");
                     e.printStackTrace();
                 }
+                break;
             }
 
             else {
