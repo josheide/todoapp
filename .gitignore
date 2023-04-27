@@ -4,6 +4,9 @@ out/
 !**/src/test/**/out/
 .idea
 
+### I am not sharing my list with you, you always start from scratch
+/todoListFile.txt
+
 ### Eclipse ###
 .apt_generated
 .classpath
