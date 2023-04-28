@@ -8,6 +8,8 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
+
 
 public class Main {
     public static void main(String[] args) {
@@ -16,7 +18,6 @@ public class Main {
         File todolist = new File(fileName);
 
         ArrayList<Task> taskList = new ArrayList<Task>();
-
 
         try {
             if (!todolist.exists()) {
@@ -59,21 +60,34 @@ public class Main {
             }
 
             else if (userInput.equals("delete")) {
+                System.out.println("Please enter the name of the user you want to delete the task of");
+                String userName = scanner.nextLine();
 
-                System.out.println("Please enter the name of the task you would like to remove:");
-                String userTask = scanner.nextLine();
-
-                boolean foundTask = false;
-                for (Task task : taskList) {
-                    if (task.name.equals(userTask)) {
-                        taskList.remove(task);
-                        foundTask = true;
-                        System.out.println(userTask + " has been removed from the to-do list.");
-                        break;
+                if(!userName.isEmpty()) {
+                    for (Task element : taskList) {
+                        if (element.assignedToUser.equals(userName)) {
+                            if (element.isComplete) {
+                                System.out.println(element.name + " - completed by " + element.assignedToUser);
+                            } else {
+                                System.out.println(element.name + " - incomplete, assigned to " + element.assignedToUser);
+                            }
+                        }
                     }
-                }
-                if (!foundTask) {
-                    System.out.println(userTask + " is not currently on the to-do list.");
+                    System.out.println("Please enter the name of the task you would like to remove:");
+                    String userTask = scanner.nextLine();
+
+                    boolean foundTask = false;
+                    for (Task task : taskList) {
+                        if (task.name.equals(userTask) && task.assignedToUser.equals(userName)) {
+                            taskList.remove(task);
+                            foundTask = true;
+                            System.out.println(userTask + " has been removed from the to-do list.");
+                            break;
+                        }
+                    }
+                    if (!foundTask) {
+                        System.out.println(userTask + " is not currently on the to-do list.");
+                    }
                 }
             }
 
@@ -100,29 +114,44 @@ public class Main {
             }
 
             else if (userInput.equals("list")) {
-                boolean listAllTasks = true;
-
                 if (taskList.size() == 0) {
                     System.out.println("Your to do list is empty. Please add an item to your list, using the 'add' command!");
                 } else {
-                    System.out.println("Please enter your name: ");
-                    String userName = scanner.nextLine();
+                    System.out.println("Please enter the name of the user you want to list tasks for (or press enter to list all tasks):");
+                    String userName = scanner.nextLine().trim();
                     if (!userName.isEmpty()) {
-                        listAllTasks = false;
-                    }
-                    for (Task element : taskList) {
-                        if (listAllTasks || element.assignedToUser.equals(userName)) {
-                            if (element.isComplete) {
-                                System.out.println(element.name + " - completed by " + element.assignedToUser);
-                                System.out.println(" ");
-                            } else {
-                                System.out.println(element.name + " - incomplete, assigned to " + element.assignedToUser);
+                        // list tasks for a specific user, the !userName protects us from running into the user not giving a username
+                        for (Task element : taskList) {
+                            if (element.assignedToUser.equals(userName)) {
+                                if (element.isComplete) {
+                                    System.out.println(element.name + " - completed by " + element.assignedToUser);
+                                } else {
+                                    System.out.println(element.name + " - incomplete, assigned to " + element.assignedToUser);
+                                }
+                            }
+                        }
+                    } else {
+                        // list all tasks grouped by user
+                        HashMap<String, ArrayList<Task>> tasksByUser = new HashMap<>();
+                        for (Task element : taskList) {
+                            ArrayList<Task> tasksForUser = tasksByUser.getOrDefault(element.assignedToUser, new ArrayList<Task>());
+                            tasksForUser.add(element);
+                            tasksByUser.put(element.assignedToUser, tasksForUser);
+                        }
+                        for (String user : tasksByUser.keySet()) {
+                            System.out.println(user + ":");
+                            ArrayList<Task> tasksForUser = tasksByUser.get(user);
+                            for (Task task : tasksForUser) {
+                                if (task.isComplete) {
+                                    System.out.println("- " + task.name + " - completed");
+                                } else {
+                                    System.out.println("- " + task.name + " - incomplete");
+                                }
                             }
                         }
                     }
                 }
             }
-
 
             else if (userInput.equals("exit")) {
 
