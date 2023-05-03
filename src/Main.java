@@ -55,8 +55,13 @@ public class Main {
                 System.out.println("Please type the name of the user the task is assigned to!");
                 String userAssigned = scanner.nextLine();
 
-                taskList.add(new Task(userTask, false, userAssigned));
-                System.out.println(userTask + " has been added!");
+                if (!userAssigned.isEmpty()) {
+                    taskList.add(new Task(userTask, false, userAssigned));
+                    System.out.println(userTask + " has been added!");
+
+                } else if (userAssigned.isEmpty()) {
+                    System.out.println("You must assign the task to a person! Please try to add this task again!");
+                }
             }
 
             else if (userInput.equals("delete")) {
@@ -95,19 +100,22 @@ public class Main {
                 System.out.println("Enter the name of the task you want to mark as complete: ");
                 String userTask = scanner.nextLine();
 
+                System.out.println("Please enter the name of the user the task is assigned to!");
+                String userName = scanner.nextLine();
+
                 boolean foundTask = false;
                 for (Task task : taskList) {
-                    if (task.name.equals(userTask) && task.isComplete == false) {
+                    if (task.name.equals(userTask) && task.isComplete == false && task.assignedToUser.equals(userName)) {
                         task.isComplete = true;
                         foundTask = true;
-                        System.out.println("Congratulations, you completed: " +userTask);
+                        System.out.println("Congratulations, you completed: " + userTask);
                         break;
                     }
-                    else if (task.name.equals(userTask) && task.isComplete) {
-                        System.out.println("You already completed " +userTask);
+                    else if (task.name.equals(userTask) && task.isComplete && task.assignedToUser.equals(userName)) {
+                        System.out.println("You already completed " + userTask);
                     }
+                }
 
-                    }
                 if (!foundTask) {
                     System.out.println(userTask + " is currently not on the to-do list.");
                 }
