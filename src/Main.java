@@ -2,14 +2,8 @@
 // then press Enter. You can now see whitespace characters in your code.
 import java.util.Scanner;
 import java.util.ArrayList;
-import java.io.File;
-import java.io.FileReader;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*; // I replaced .File .FileReader .BufferedReader .BufferedWriter .FileWriter .IOException with *
 import java.util.HashMap;
-
 
 public class Main {
     public static void main(String[] args) {
@@ -19,6 +13,9 @@ public class Main {
 
         ArrayList<Task> taskList = new ArrayList<Task>();
 
+        int nextID = taskList.size() + 1;
+
+
         try {
             if (!todolist.exists()) {
                 todolist.createNewFile();
@@ -27,7 +24,7 @@ public class Main {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] taskData = line.split(" - ");
-                taskList.add(new Task(taskData[0], Boolean.parseBoolean(taskData[1]),taskData[2]));
+                taskList.add(new Task(nextID, taskData[0], Boolean.parseBoolean(taskData[1]),taskData[2]));
             }
             reader.close();
         } catch (IOException e) {
@@ -56,7 +53,7 @@ public class Main {
                 String userAssigned = scanner.nextLine();
 
                 if (!userAssigned.isEmpty()) {
-                    taskList.add(new Task(userTask, false, userAssigned));
+                    taskList.add(new Task(nextID, userTask, false, userAssigned));
                     System.out.println(userTask + " has been added!");
 
                 } else if (userAssigned.isEmpty()) {
@@ -132,9 +129,9 @@ public class Main {
                         for (Task element : taskList) {
                             if (element.assignedToUser.equals(userName)) {
                                 if (element.isComplete) {
-                                    System.out.println(element.name + " - completed by " + element.assignedToUser);
+                                    System.out.println(element.name + " - completed by " + element.assignedToUser + element.id);
                                 } else {
-                                    System.out.println(element.name + " - incomplete, assigned to " + element.assignedToUser);
+                                    System.out.println(element.name + " - incomplete, assigned to " + element.assignedToUser + element.id);
                                 }
                             }
                         }
@@ -168,7 +165,7 @@ public class Main {
                 try {
                     BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
                     for (Task task : taskList) {
-                        writer.write(task.name + " - " + task.isComplete + " - " + task.assignedToUser + "\n");
+                        writer.write(task.id + " - " + task.name + " - " + task.isComplete + " - " + task.assignedToUser + "\n");
                     }
                     writer.close(); // VERY IMPORTANT, otherwise the save is not complete
 
