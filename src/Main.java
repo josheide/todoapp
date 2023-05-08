@@ -15,7 +15,6 @@ public class Main {
 
         int nextID = taskList.size() + 1;
 
-
         try {
             if (!todolist.exists()) {
                 todolist.createNewFile();
@@ -24,7 +23,7 @@ public class Main {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] taskData = line.split(" - ");
-                taskList.add(new Task(nextID, taskData[0], Boolean.parseBoolean(taskData[1]),taskData[2]));
+                taskList.add(new Task(Integer.parseInt(taskData[0]), taskData[1], Boolean.parseBoolean(taskData[2]), taskData[3]));
             }
             reader.close();
         } catch (IOException e) {
@@ -54,7 +53,7 @@ public class Main {
 
                 if (!userAssigned.isEmpty()) {
                     taskList.add(new Task(nextID, userTask, false, userAssigned));
-                    System.out.println(userTask + " has been added!");
+                    System.out.println(userTask + " has been added with the unique identifier: " + taskList.size()); // If you delete a task then the ID that it prints here is off. I tried nextID here and it always prints 1.
 
                 } else if (userAssigned.isEmpty()) {
                     System.out.println("You must assign the task to a person! Please try to add this task again!");
@@ -120,23 +119,19 @@ public class Main {
 
             else if (userInput.equals("list")) {
                 if (taskList.size() == 0) {
-                    System.out.println("Your to do list is empty. Please add an item to your list, using the 'add' command!");
+                    System.out.println("Your to-do list is empty. Please add an item to your list using the 'add' command!");
                 } else {
                     System.out.println("Please enter the name of the user you want to list tasks for (or press enter to list all tasks):");
                     String userName = scanner.nextLine().trim();
                     if (!userName.isEmpty()) {
-                        // list tasks for a specific user, the !userName protects us from running into the user not giving a username
+                        // List tasks for a specific user
                         for (Task element : taskList) {
                             if (element.assignedToUser.equals(userName)) {
-                                if (element.isComplete) {
-                                    System.out.println(element.name + " - completed by " + element.assignedToUser + element.id);
-                                } else {
-                                    System.out.println(element.name + " - incomplete, assigned to " + element.assignedToUser + element.id);
-                                }
+                                System.out.println("- " + element.id + " - " + element.name + " - " + (element.isComplete ? "completed" : "incomplete") + " - assigned to " + element.assignedToUser);
                             }
                         }
                     } else {
-                        // list all tasks grouped by user
+                        // List all tasks grouped by user
                         HashMap<String, ArrayList<Task>> tasksByUser = new HashMap<>();
                         for (Task element : taskList) {
                             ArrayList<Task> tasksForUser = tasksByUser.getOrDefault(element.assignedToUser, new ArrayList<Task>());
@@ -147,16 +142,13 @@ public class Main {
                             System.out.println(user + ":");
                             ArrayList<Task> tasksForUser = tasksByUser.get(user);
                             for (Task task : tasksForUser) {
-                                if (task.isComplete) {
-                                    System.out.println("- " + task.name + " - completed");
-                                } else {
-                                    System.out.println("- " + task.name + " - incomplete");
-                                }
+                                System.out.println("- " + task.id + " - " + task.name + " - " + (task.isComplete ? "completed" : "incomplete") + " - assigned to " + task.assignedToUser);
                             }
                         }
                     }
                 }
             }
+
 
             else if (userInput.equals("exit")) {
 
