@@ -1,11 +1,16 @@
 
-class Task {
+public class Task {
     int id;
     static int nextId = 1; // static ensures that the variable is shared
     String name;
     boolean isComplete;
     String assignedToUser;
 
+    public int getId() {
+        return id;
+    }
+
+    // This new getter method is used when deleting or completing a task with an ID.
 
 
     Task(int id, String name, boolean isComplete, String assignedToUser) {

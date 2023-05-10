@@ -68,26 +68,29 @@ public class Main {
                     for (Task element : taskList) {
                         if (element.assignedToUser.equals(userName)) {
                             if (element.isComplete) {
-                                System.out.println(element.name + " - completed by " + element.assignedToUser);
+                                System.out.println("- " + element.id + " - " + element.name + " - completed by " + element.assignedToUser);
                             } else {
-                                System.out.println(element.name + " - incomplete, assigned to " + element.assignedToUser);
+                                System.out.println("- " + element.id + " - " + element.name + " - incomplete, assigned to " + element.assignedToUser);
                             }
                         }
                     }
-                    System.out.println("Please enter the name of the task you would like to remove:");
-                    String userTask = scanner.nextLine();
+
+                    System.out.println("Please enter the ID of the task you would like to remove:");
+                    int taskIdInput = scanner.nextInt();
+                    scanner.nextLine(); // Without this line the program takes another task input and immediately spits out "Sorry, I did not catch that"
+
 
                     boolean foundTask = false;
                     for (Task task : taskList) {
-                        if (task.name.equals(userTask) && task.assignedToUser.equals(userName)) {
+                        if (task.getId() == taskIdInput && task.assignedToUser.equals(userName)) {
                             taskList.remove(task);
                             foundTask = true;
-                            System.out.println(userTask + " has been removed from the to-do list.");
+                            System.out.println(task.name + " has been removed from the to-do list.");
                             break;
                         }
                     }
                     if (!foundTask) {
-                        System.out.println(userTask + " is not currently on the to-do list.");
+                        System.out.println("This task is not currently on the to-do list.");
                     }
                 }
             }
