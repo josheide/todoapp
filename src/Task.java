@@ -13,11 +13,9 @@ public class Task {
     // This new getter method is used when deleting or completing a task with an ID.
 
 
-    Task(int id, String name, boolean isComplete, String assignedToUser) {
+    Task(int nextId, String name, boolean isComplete, String assignedToUser) {
 
         this.id = nextId;
-        nextId++;
-
         this.name = name;
         this.isComplete = isComplete;
         this.assignedToUser = assignedToUser;

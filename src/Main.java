@@ -2,7 +2,7 @@
 // then press Enter. You can now see whitespace characters in your code.
 import java.util.Scanner;
 import java.util.ArrayList;
-import java.io.*; // I replaced .File .FileReader .BufferedReader .BufferedWriter .FileWriter .IOException with *
+import java.io.*;
 import java.util.HashMap;
 
 public class Main {
@@ -27,6 +27,9 @@ public class Main {
                 // in the last version taskData had 3 properties. If the reader finds tasks without IDs, it assigns them an ID and shifts all the other properties to their appropriate locations.
             }
             reader.close();
+
+            nextID = taskList.size() + 1;
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -49,15 +52,20 @@ public class Main {
                 System.out.println("Please type the task that you would like to add!");
                 String userTask = scanner.nextLine();
 
-                System.out.println("Please type the name of the user the task is assigned to!");
-                String userAssigned = scanner.nextLine();
+                if (!userTask.isEmpty()) {
+                    System.out.println("Please type the name of the user the task is assigned to!");
+                    String userAssigned = scanner.nextLine();
 
-                if (!userAssigned.isEmpty()) {
-                    taskList.add(new Task(nextID, userTask, false, userAssigned));
-                    System.out.println(userTask + " has been added with the unique identifier: " + taskList.size()); // If you delete a task then the ID that it prints here is off. I tried nextID here and it always prints 1.
+                    if (!userAssigned.isEmpty()) {
+                        taskList.add(new Task(nextID, userTask, false, userAssigned));
+                        System.out.println(userTask + " has been added with the unique identifier: " + nextID); //
+                        nextID++;
 
-                } else if (userAssigned.isEmpty()) {
-                    System.out.println("You must assign the task to a person! Please try to add this task again!");
+                    } else if (userAssigned.isEmpty()) {
+                        System.out.println("You must assign the task to a person! Please try to add this task again!");
+                    }
+                } else {
+                    System.out.println("You cannot enter an empty field as a task, please try again!");
                 }
             }
 
