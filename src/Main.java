@@ -74,8 +74,10 @@ public class Main {
                 String userName = scanner.nextLine();
 
                 if(!userName.isEmpty()) {
+                    boolean foundUser = false;
                     for (Task element : taskList) {
                         if (element.assignedToUser.equals(userName)) {
+                            foundUser = true;
                             if (element.isComplete) {
                                 System.out.println("- " + element.id + " - " + element.name + " - completed by " + element.assignedToUser);
                             } else {
@@ -83,36 +85,45 @@ public class Main {
                             }
                         }
                     }
+                        if (!foundUser) {
+                            System.out.println("There are no tasks saved for the user: " + userName);
+                            break;
+                        } else {
 
-                    System.out.println("Please enter the ID of the task you would like to remove:");
+                            System.out.println("Please enter the ID of the task you would like to remove:");
 
-                    String userInputTaskNumber = scanner.next();
-                    scanner.nextLine(); // Without this line the program gets confused and immediately spits out "Sorry, I did not catch that"
+                            String userInputTaskNumber = scanner.next();
+                            scanner.nextLine(); // Without this line the program gets confused and immediately spits out "Sorry, I did not catch that"
 
-                    try {
-                        int taskNumber = Integer.parseInt(userInputTaskNumber);
+                            try {
+                                int taskNumber = Integer.parseInt(userInputTaskNumber);
 
-                        boolean foundTask = false;
-                        for (Task task : taskList) {
-                            if (task.id == taskNumber && task.assignedToUser.equals(userName)) {
-                                taskList.remove(task);
-                                foundTask = true;
-                                System.out.println(task.name + " has been removed from the to-do list.");
-                                break;
+                                boolean foundTask = false;
+                                for (Task task : taskList) {
+                                    if (task.id == taskNumber && task.assignedToUser.equals(userName)) {
+                                        taskList.remove(task);
+                                        foundTask = true;
+                                        System.out.println(task.name + " has been removed from the to-do list.");
+                                        break;
+                                    }
+                                }
+                                if (!foundTask) {
+                                    System.out.println("This task is not currently on the to-do list.");
+                                } else {
+                                    for (int i = 0; i < taskList.size(); i++) {
+                                        taskList.get(i).id = i + 1;
+                                    }
+                                }
+                            } catch (NumberFormatException e) {
+                                System.out.println("Invalid input. Please enter a valid task number.");
                             }
                         }
-                        if (!foundTask) {
-                            System.out.println("This task is not currently on the to-do list.");
-                        }
-                    } catch (NumberFormatException e) {
-                        System.out.println("Invalid input. Please enter a valid task number.");
                     }
                 }
-            }
 
             else if (userInput.equals("complete")) {
 
-                System.out.println("Please enter the ID of the task you would like to remove:");
+                System.out.println("Please enter the ID of the task you would like to complete:");
 
                 String userInputTaskNumber = scanner.next();
                 scanner.nextLine(); // Without this line the program gets confused and acts as if I gave it an empty string as a command.
@@ -130,7 +141,9 @@ public class Main {
                         } else if (task.id == taskNumber && task.isComplete) {
                             System.out.println("You already completed " + task.name);
                         }
-                    }
+                    } if (!foundTask) {
+                        System.out.println("There is no task with that ID");
+                        }
                 } catch (NumberFormatException e) {
                     System.out.println("Invalid input. Please enter a valid task number.");
                 }
