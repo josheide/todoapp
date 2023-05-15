@@ -10,10 +10,8 @@ public class Main {
 
         String fileName = "todoListFile.txt";
         File todolist = new File(fileName);
-
         ArrayList<Task> taskList = new ArrayList<Task>();
-
-        int nextID = taskList.size() + 1;
+        int nextID = 1;
 
         try {
             if (!todolist.exists()) {
@@ -23,16 +21,28 @@ public class Main {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] taskData = line.split(" - ");
-                taskList.add(new Task(taskData.length == 3 ? nextID : Integer.parseInt(taskData[0]), taskData[taskData.length == 3 ? 0 : 1], Boolean.parseBoolean(taskData[taskData.length == 3 ? 1 : 2]), taskData[taskData.length == 3 ? 2 : 3]));
+                boolean taskHasNoID = taskData.length == 3;
+                int taskID = taskHasNoID ? nextID++ : Integer.parseInt(taskData[0]);
+                String taskName = taskData[taskHasNoID ? 0 : 1];
+                boolean taskIsComplete = Boolean.parseBoolean(taskData[taskHasNoID ? 1 : 2]);
+                String taskUser = taskData[taskHasNoID ? 2 : 3];
+                Task newTask = new Task(taskID, taskName, taskIsComplete, taskUser);
+                taskList.add(newTask);
                 // in the last version taskData had 3 properties. If the reader finds tasks without IDs, it assigns them an ID and shifts all the other properties to their appropriate locations.
             }
             reader.close();
 
-            nextID = taskList.size() + 1;
-
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        int maxID = 0;
+        for (Task task : taskList) {
+            if (task.getId() > maxID) {
+                maxID = task.getId();
+            }
+        }
+        nextID = maxID + 1;
 
         Scanner scanner = new Scanner(System.in);
 
@@ -70,61 +80,52 @@ public class Main {
                 } else {
                     System.out.println("You cannot enter an empty field as a task, please try again!");
                 }
-            }
-
-            else if (userInput.equals("delete")) {
+            } else if (userInput.equals("delete")) {
                 System.out.println("Please enter the name of the user you want to delete the task of");
                 String userName = scanner.nextLine();
 
-                if(!userName.isEmpty()) {
+                if (!userName.isEmpty()) {
                     boolean foundUser = false;
                     for (Task element : taskList) {
                         if (element.assignedToUser.equals(userName)) {
                             foundUser = true;
                             if (element.isComplete) {
-                                System.out.println("- " + element.id + " - " + element.name + " - completed by " + element.assignedToUser);
+                                System.out.println("- " + element.getId() + " - " + element.name + " - completed by " + element.assignedToUser);
                             } else {
-                                System.out.println("- " + element.id + " - " + element.name + " - incomplete, assigned to " + element.assignedToUser);
+                                System.out.println("- " + element.getId() + " - " + element.name + " - incomplete, assigned to " + element.assignedToUser);
                             }
                         }
                     }
-                        if (!foundUser) {
-                            System.out.println("There are no tasks saved for the user: " + userName);
-                            break;
-                        } else {
+                    if (!foundUser) {
+                        System.out.println("There are no tasks saved for the user: " + userName);
+                        break;
+                    } else {
+                        System.out.println("Please enter the ID of the task you would like to remove:");
 
-                            System.out.println("Please enter the ID of the task you would like to remove:");
+                        String userInputTaskNumber = scanner.next();
+                        scanner.nextLine(); // Without this line the program gets confused and immediately spits out "Sorry, I did not catch that"
 
-                            String userInputTaskNumber = scanner.next();
-                            scanner.nextLine(); // Without this line the program gets confused and immediately spits out "Sorry, I did not catch that"
+                        try {
+                            int taskNumber = Integer.parseInt(userInputTaskNumber);
 
-                            try {
-                                int taskNumber = Integer.parseInt(userInputTaskNumber);
-
-                                boolean foundTask = false;
-                                for (Task task : taskList) {
-                                    if (task.id == taskNumber && task.assignedToUser.equals(userName)) {
-                                        taskList.remove(task);
-                                        foundTask = true;
-                                        System.out.println(task.name + " has been removed from the to-do list.");
-                                        break;
-                                    }
+                            boolean foundTask = false;
+                            for (Task task : taskList) {
+                                if (task.getId() == taskNumber && task.assignedToUser.equals(userName)) {
+                                    taskList.remove(task);
+                                    foundTask = true;
+                                    System.out.println(task.name + " has been removed from the to-do list.");
+                                    break;
                                 }
-                                if (!foundTask) {
-                                    System.out.println("This task is not currently on the to-do list.");
-                                } else {
-                                    for (int i = 0; i < taskList.size(); i++) {
-                                        taskList.get(i).id = i + 1;
-                                    }
-                                }
-                            } catch (NumberFormatException e) {
-                                System.out.println("Invalid input. Please enter a valid task number.");
                             }
+                            if (!foundTask) {
+                                System.out.println("This task is not currently on the to-do list.");
+                            }
+                        } catch (NumberFormatException e) {
+                            System.out.println("Invalid input. Please enter a valid task number.");
                         }
                     }
                 }
-
-            else if (userInput.equals("complete")) {
+            } else if (userInput.equals("complete")) {
 
                 System.out.println("Please enter the ID of the task you would like to complete:");
 
@@ -136,12 +137,12 @@ public class Main {
 
                     boolean foundTask = false;
                     for (Task task : taskList) {
-                        if (task.id == taskNumber) {
+                        if (task.getId() == taskNumber) {
                             task.isComplete = true;
                             foundTask = true;
                             System.out.println("Congratulations, you completed: " + task.name);
                             break;
-                        } else if (task.id == taskNumber && task.isComplete) {
+                        } else if (task.getId() == taskNumber && task.isComplete) {
                             System.out.println("You already completed " + task.name);
                         }
                     } if (!foundTask) {
@@ -150,10 +151,7 @@ public class Main {
                 } catch (NumberFormatException e) {
                     System.out.println("Invalid input. Please enter a valid task number.");
                 }
-            }
-
-
-            else if (userInput.equals("list")) {
+            }  else if (userInput.equals("list")) {
                 if (taskList.size() == 0) {
                     System.out.println("Your to-do list is empty. Please add an item to your list using the 'add' command!");
                 } else {
@@ -163,7 +161,7 @@ public class Main {
                         // List tasks for a specific user
                         for (Task element : taskList) {
                             if (element.assignedToUser.equals(userName)) {
-                                System.out.println("- " + element.id + " - " + element.name + " - " + (element.isComplete ? "completed" : "incomplete") + " - assigned to " + element.assignedToUser);
+                                System.out.println("- " + element.getId() + " - " + element.name + " - " + (element.isComplete ? "completed" : "incomplete") + " - assigned to " + element.assignedToUser);
                             }
                         }
                     } else {
@@ -178,22 +176,19 @@ public class Main {
                             System.out.println(user + ":");
                             ArrayList<Task> tasksForUser = tasksByUser.get(user);
                             for (Task task : tasksForUser) {
-                                System.out.println("- " + task.id + " - " + task.name + " - " + (task.isComplete ? "completed" : "incomplete") + " - assigned to " + task.assignedToUser);
+                                System.out.println("- " + task.getId() + " - " + task.name + " - " + (task.isComplete ? "completed" : "incomplete") + " - assigned to " + task.assignedToUser);
                             }
                         }
                     }
                 }
-            }
-
-
-            else if (userInput.equals("exit")) {
+            } else if (userInput.equals("exit")) {
 
                 String filePath = "todoListFile.txt";
 
                 try {
                     BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
                     for (Task task : taskList) {
-                        writer.write(task.id + " - " + task.name + " - " + task.isComplete + " - " + task.assignedToUser + "\n");
+                        writer.write(task.getId() + " - " + task.name + " - " + task.isComplete + " - " + task.assignedToUser + "\n");
                     }
                     writer.close(); // VERY IMPORTANT, otherwise the save is not complete
 
