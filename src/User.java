@@ -1,10 +1,10 @@
 public class User {
-    String savedUserName;
-    String userPassword;
+    String userName;
+    String password;
 
-    User(String savedUserName, String userPassword) {
-        this.savedUserName = savedUserName;
-        this.userPassword = userPassword;
+    User(String userName, String userPassword) {
+        this.userName = userName;
+        this.password = userPassword;
     }
 }
 

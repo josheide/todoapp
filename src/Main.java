@@ -12,6 +12,17 @@ public class Main {
     static int nextID = 1;
     static Scanner scanner = new Scanner(System.in);
 
+    public static void welcomeMessage(){
+        String filePathWelcome = "welcomeText.txt";
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePathWelcome))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+            }
+        } catch (IOException e) {
+            System.out.println("An error occurred while reading the file: " + e.getMessage());
+        }
+    }
     public static void addTask() {
         System.out.println("Please type the task that you would like to add!");
         String userTask = scanner.nextLine();
@@ -153,8 +164,53 @@ public class Main {
             e.printStackTrace();
         }
     }
+    public static void loginAction() {
+        System.out.println("Hello and welcome! Please enter your name!");
+        boolean foundUser = false;
 
+        String userInputName = scanner.nextLine();
+        if (!userInputName.isEmpty()) {
+            for (User element : userArrayList) {
+                if (element.userName.equals(userInputName)) {
+                    foundUser = true;
+                }
+            }
+        }
+        System.out.println(userInputName + foundUser);
 
+        if (foundUser) {
+            System.out.println("Please enter the password for " + userInputName);
+            String userInputPassword = scanner.nextLine();
+        }
+
+        else if (!foundUser) {
+            System.out.println("I could not find a user with that name. To register one, please enter a password!");
+            String userInputPassword = scanner.nextLine();
+
+            System.out.println("Please confirm your password!");
+            String userInputPassword2 = scanner.nextLine();
+
+            if (userInputPassword.equals(userInputPassword2)) {
+                userArrayList.add(new User(userInputName,userInputPassword));
+
+                String filePath = "userList.txt";
+
+                try {
+                    BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
+                    for (User user : userArrayList) {
+                        writer.write(user.userName + " - " + user.password + "\n");
+                    }
+                    writer.close(); // VERY IMPORTANT, otherwise the save is not complete
+
+                } catch (Exception e) {
+                    System.out.println("An error occurred while writing to the file.");
+                    e.printStackTrace();
+                }
+            } else {
+                System.out.println("Passwords do not match. Please try again!");
+            }
+        }
+    }
 
     public static void main(String[] args) {
         String fileName = "todoListFile.txt";
@@ -190,7 +246,11 @@ public class Main {
             BufferedReader userReader = new BufferedReader(new FileReader(userListFile));
             String userLine;
             while ((userLine = userReader.readLine()) != null) {
-
+                String[] userData = userLine.split(" - ");
+                String userName = userData[0];
+                String userPassword = userData[1];
+                User newUser = new User(userName, userPassword);
+                userArrayList.add(newUser);
             }
             userReader.close();
         } catch (IOException e) {
@@ -205,18 +265,14 @@ public class Main {
         }
         nextID = maxID + 1;
 
-        String filePathWelcome = "welcomeText.txt";
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePathWelcome))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                System.out.println(line);
-            }
-        } catch (IOException e) {
-            System.out.println("An error occurred while reading the file: " + e.getMessage());
-        }
-
         while (true) {
+
+            loginAction();
+
+            welcomeMessage();
+
             System.out.print("Enter a command (or 'exit' to save and exit): ");
+
             String userInput = scanner.nextLine();
 
             if (userInput.equals("add")) {
