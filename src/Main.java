@@ -35,13 +35,16 @@ public class Main {
         }
 
         Scanner scanner = new Scanner(System.in);
-        System.out.println("In this app you can manage your to-do list! Here's how it works:");
-        System.out.println(" ");
-        System.out.println("- You can add tasks to your to do list by typing: 'add' ");
-        System.out.println("- You can remove items from your to do list by typing: 'delete' ");
-        System.out.println("- You  can ask  the program to show your to do list by typing: 'list' ");
-        System.out.println("- You can complete a task by typing 'complete' ");
-        System.out.println("");
+
+        String filePathWelcome = "welcomeText.txt";
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePathWelcome))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+            }
+        } catch (IOException e) {
+            System.out.println("An error occurred while reading the file: " + e.getMessage());
+        }
 
         while (true) {
             System.out.print("Enter a command (or 'exit' to save and exit): ");
