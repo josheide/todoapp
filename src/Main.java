@@ -6,12 +6,162 @@ import java.io.*;
 import java.util.HashMap;
 
 public class Main {
-    public static void main(String[] args) {
 
+    static ArrayList<Task> taskList = new ArrayList<Task>();
+    static ArrayList<User> userArrayList = new ArrayList<User>();
+    static int nextID = 1;
+    static Scanner scanner = new Scanner(System.in);
+
+    public static void addTask() {
+        System.out.println("Please type the task that you would like to add!");
+        String userTask = scanner.nextLine();
+
+        if (!userTask.isEmpty()) {
+            System.out.println("Please type the name of the user the task is assigned to!");
+            String userAssigned = scanner.nextLine();
+
+            if (!userAssigned.isEmpty()) {
+                taskList.add(new Task(nextID, userTask, false, userAssigned));
+                System.out.println(userTask + " has been added with the unique identifier: " + nextID); //
+                nextID++;
+
+            } else if (userAssigned.isEmpty()) {
+                System.out.println("You must assign the task to a person! Please try to add this task again!");
+            }
+        } else {
+            System.out.println("You cannot enter an empty field as a task, please try again!");
+        }
+    }
+
+    public static void deleteTask() {
+        System.out.println("Please enter the name of the user you want to delete the task of");
+        String userName = scanner.nextLine();
+
+        if (!userName.isEmpty()) {
+            boolean foundUser = false;
+            for (Task element : taskList) {
+                if (element.assignedToUser.equals(userName)) {
+                    foundUser = true;
+                    if (element.isComplete) {
+                        System.out.println("- " + element.getId() + " - " + element.name + " - completed by " + element.assignedToUser);
+                    } else {
+                        System.out.println("- " + element.getId() + " - " + element.name + " - incomplete, assigned to " + element.assignedToUser);
+                    }
+                }
+            }
+            if (!foundUser) {
+                System.out.println("There are no tasks saved for the user: " + userName);
+            } else {
+                System.out.println("Please enter the ID of the task you would like to remove:");
+
+                String userInputTaskNumber = scanner.next();
+                scanner.nextLine(); // Without this line the program gets confused and immediately spits out "Sorry, I did not catch that"
+
+                try {
+                    int taskNumber = Integer.parseInt(userInputTaskNumber);
+
+                    boolean foundTask = false;
+                    for (Task task : taskList) {
+                        if (task.getId() == taskNumber && task.assignedToUser.equals(userName)) {
+                            taskList.remove(task);
+                            foundTask = true;
+                            System.out.println(task.name + " has been removed from the to-do list.");
+                            break;
+                        }
+                    }
+                    if (!foundTask) {
+                        System.out.println("This task is not currently on the to-do list.");
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid input. Please enter a valid task number.");
+                }
+            }
+        }
+    }
+    public static void completeTask() {
+
+        System.out.println("Please enter the ID of the task you would like to complete:");
+
+        String userInputTaskNumber = scanner.next();
+        scanner.nextLine(); // Without this line the program gets confused and acts as if I gave it an empty string as a command.
+
+        try {
+            int taskNumber = Integer.parseInt(userInputTaskNumber);
+
+            boolean foundTask = false;
+            for (Task task : taskList) {
+                if (task.getId() == taskNumber) {
+                    task.isComplete = true;
+                    foundTask = true;
+                    System.out.println("Congratulations, you completed: " + task.name);
+                    break;
+                } else if (task.getId() == taskNumber && task.isComplete) {
+                    System.out.println("You already completed " + task.name);
+                }
+            } if (!foundTask) {
+                System.out.println("There is no task with that ID");
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Please enter a valid task number.");
+        }
+
+    }
+    public static void listTask() {
+        if (taskList.size() == 0) {
+            System.out.println("Your to-do list is empty. Please add an item to your list using the 'add' command!");
+        } else {
+            System.out.println("Please enter the name of the user you want to list tasks for (or press enter to list all tasks):");
+            String userName = scanner.nextLine().trim();
+            if (!userName.isEmpty()) {
+                // List tasks for a specific user
+                for (Task element : taskList) {
+                    if (element.assignedToUser.equals(userName)) {
+                        System.out.println("- " + element.getId() + " - " + element.name + " - " + (element.isComplete ? "completed" : "incomplete") + " - assigned to " + element.assignedToUser);
+                    }
+                }
+            } else {
+                // List all tasks grouped by user
+                HashMap<String, ArrayList<Task>> tasksByUser = new HashMap<>();
+                for (Task element : taskList) {
+                    ArrayList<Task> tasksForUser = tasksByUser.getOrDefault(element.assignedToUser, new ArrayList<Task>());
+                    tasksForUser.add(element);
+                    tasksByUser.put(element.assignedToUser, tasksForUser);
+                }
+                for (String user : tasksByUser.keySet()) {
+                    System.out.println(user + ":");
+                    ArrayList<Task> tasksForUser = tasksByUser.get(user);
+                    for (Task task : tasksForUser) {
+                        System.out.println("- " + task.getId() + " - " + task.name + " - " + (task.isComplete ? "completed" : "incomplete") + " - assigned to " + task.assignedToUser);
+                    }
+                }
+            }
+        }
+    }
+    public static void exitAndSave() {
+
+        String filePath = "todoListFile.txt";
+
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
+            for (Task task : taskList) {
+                writer.write(task.getId() + " - " + task.name + " - " + task.isComplete + " - " + task.assignedToUser + "\n");
+            }
+            writer.close(); // VERY IMPORTANT, otherwise the save is not complete
+
+        } catch (Exception e) {
+            System.out.println("An error occurred while writing to the file.");
+            e.printStackTrace();
+        }
+    }
+
+
+
+    public static void main(String[] args) {
         String fileName = "todoListFile.txt";
         File todolist = new File(fileName);
-        ArrayList<Task> taskList = new ArrayList<Task>();
-        int nextID = 1;
+
+        String userList = "userList.txt";
+        File userListFile = new File(userList);
 
         try {
             if (!todolist.exists()) {
@@ -30,8 +180,19 @@ public class Main {
                 taskList.add(newTask);
                 // in the last version taskData had 3 properties. If the reader finds tasks without IDs, it assigns them an ID and shifts all the other properties to their appropriate locations.
             }
-            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            if (!userListFile.exists()) {
+                userListFile.createNewFile();
+            }
+            BufferedReader userReader = new BufferedReader(new FileReader(userListFile));
+            String userLine;
+            while ((userLine = userReader.readLine()) != null) {
 
+            }
+            userReader.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -43,8 +204,6 @@ public class Main {
             }
         }
         nextID = maxID + 1;
-
-        Scanner scanner = new Scanner(System.in);
 
         String filePathWelcome = "welcomeText.txt";
         try (BufferedReader reader = new BufferedReader(new FileReader(filePathWelcome))) {
@@ -61,145 +220,17 @@ public class Main {
             String userInput = scanner.nextLine();
 
             if (userInput.equals("add")) {
-
-                System.out.println("Please type the task that you would like to add!");
-                String userTask = scanner.nextLine();
-
-                if (!userTask.isEmpty()) {
-                    System.out.println("Please type the name of the user the task is assigned to!");
-                    String userAssigned = scanner.nextLine();
-
-                    if (!userAssigned.isEmpty()) {
-                        taskList.add(new Task(nextID, userTask, false, userAssigned));
-                        System.out.println(userTask + " has been added with the unique identifier: " + nextID); //
-                        nextID++;
-
-                    } else if (userAssigned.isEmpty()) {
-                        System.out.println("You must assign the task to a person! Please try to add this task again!");
-                    }
-                } else {
-                    System.out.println("You cannot enter an empty field as a task, please try again!");
-                }
+                addTask();
             } else if (userInput.equals("delete")) {
-                System.out.println("Please enter the name of the user you want to delete the task of");
-                String userName = scanner.nextLine();
-
-                if (!userName.isEmpty()) {
-                    boolean foundUser = false;
-                    for (Task element : taskList) {
-                        if (element.assignedToUser.equals(userName)) {
-                            foundUser = true;
-                            if (element.isComplete) {
-                                System.out.println("- " + element.getId() + " - " + element.name + " - completed by " + element.assignedToUser);
-                            } else {
-                                System.out.println("- " + element.getId() + " - " + element.name + " - incomplete, assigned to " + element.assignedToUser);
-                            }
-                        }
-                    }
-                    if (!foundUser) {
-                        System.out.println("There are no tasks saved for the user: " + userName);
-                        break;
-                    } else {
-                        System.out.println("Please enter the ID of the task you would like to remove:");
-
-                        String userInputTaskNumber = scanner.next();
-                        scanner.nextLine(); // Without this line the program gets confused and immediately spits out "Sorry, I did not catch that"
-
-                        try {
-                            int taskNumber = Integer.parseInt(userInputTaskNumber);
-
-                            boolean foundTask = false;
-                            for (Task task : taskList) {
-                                if (task.getId() == taskNumber && task.assignedToUser.equals(userName)) {
-                                    taskList.remove(task);
-                                    foundTask = true;
-                                    System.out.println(task.name + " has been removed from the to-do list.");
-                                    break;
-                                }
-                            }
-                            if (!foundTask) {
-                                System.out.println("This task is not currently on the to-do list.");
-                            }
-                        } catch (NumberFormatException e) {
-                            System.out.println("Invalid input. Please enter a valid task number.");
-                        }
-                    }
-                }
+                deleteTask();
             } else if (userInput.equals("complete")) {
-
-                System.out.println("Please enter the ID of the task you would like to complete:");
-
-                String userInputTaskNumber = scanner.next();
-                scanner.nextLine(); // Without this line the program gets confused and acts as if I gave it an empty string as a command.
-
-                try {
-                    int taskNumber = Integer.parseInt(userInputTaskNumber);
-
-                    boolean foundTask = false;
-                    for (Task task : taskList) {
-                        if (task.getId() == taskNumber) {
-                            task.isComplete = true;
-                            foundTask = true;
-                            System.out.println("Congratulations, you completed: " + task.name);
-                            break;
-                        } else if (task.getId() == taskNumber && task.isComplete) {
-                            System.out.println("You already completed " + task.name);
-                        }
-                    } if (!foundTask) {
-                        System.out.println("There is no task with that ID");
-                        }
-                } catch (NumberFormatException e) {
-                    System.out.println("Invalid input. Please enter a valid task number.");
-                }
-            }  else if (userInput.equals("list")) {
-                if (taskList.size() == 0) {
-                    System.out.println("Your to-do list is empty. Please add an item to your list using the 'add' command!");
-                } else {
-                    System.out.println("Please enter the name of the user you want to list tasks for (or press enter to list all tasks):");
-                    String userName = scanner.nextLine().trim();
-                    if (!userName.isEmpty()) {
-                        // List tasks for a specific user
-                        for (Task element : taskList) {
-                            if (element.assignedToUser.equals(userName)) {
-                                System.out.println("- " + element.getId() + " - " + element.name + " - " + (element.isComplete ? "completed" : "incomplete") + " - assigned to " + element.assignedToUser);
-                            }
-                        }
-                    } else {
-                        // List all tasks grouped by user
-                        HashMap<String, ArrayList<Task>> tasksByUser = new HashMap<>();
-                        for (Task element : taskList) {
-                            ArrayList<Task> tasksForUser = tasksByUser.getOrDefault(element.assignedToUser, new ArrayList<Task>());
-                            tasksForUser.add(element);
-                            tasksByUser.put(element.assignedToUser, tasksForUser);
-                        }
-                        for (String user : tasksByUser.keySet()) {
-                            System.out.println(user + ":");
-                            ArrayList<Task> tasksForUser = tasksByUser.get(user);
-                            for (Task task : tasksForUser) {
-                                System.out.println("- " + task.getId() + " - " + task.name + " - " + (task.isComplete ? "completed" : "incomplete") + " - assigned to " + task.assignedToUser);
-                            }
-                        }
-                    }
-                }
+                completeTask();
+            } else if (userInput.equals("list")) {
+                listTask();
             } else if (userInput.equals("exit")) {
-
-                String filePath = "todoListFile.txt";
-
-                try {
-                    BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
-                    for (Task task : taskList) {
-                        writer.write(task.getId() + " - " + task.name + " - " + task.isComplete + " - " + task.assignedToUser + "\n");
-                    }
-                    writer.close(); // VERY IMPORTANT, otherwise the save is not complete
-
-                } catch (Exception e) {
-                    System.out.println("An error occurred while writing to the file.");
-                    e.printStackTrace();
-                }
+                exitAndSave();
                 break;
-            }
-
-            else {
+            } else {
                 System.out.println("Sorry, I did not catch that!");
             }
         }
