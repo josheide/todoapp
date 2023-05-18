@@ -1,9 +1,7 @@
 // Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
 // then press Enter. You can now see whitespace characters in your code.
-import java.util.Scanner;
-import java.util.ArrayList;
+import java.util.*;
 import java.io.*;
-import java.util.HashMap;
 
 public class Main {
 
@@ -22,6 +20,15 @@ public class Main {
         } catch (IOException e) {
             System.out.println("An error occurred while reading the file: " + e.getMessage());
         }
+    }
+
+    public static boolean authenticateUser(String username, String password) {
+        for (User element : userArrayList) {
+            if (element.userName.equals(username) && element.password.equals(password)) {
+                return true;
+            }
+        }
+        return false;
     }
     public static void addTask() {
         System.out.println("Please type the task that you would like to add!");
@@ -164,51 +171,169 @@ public class Main {
             e.printStackTrace();
         }
     }
+
+    public static void openingMessage(){
+        System.out.println("Welcome! What would you like to do?");
+        System.out.println("1. Add a new user");
+        System.out.println("2. Delete an existing user");
+        System.out.println("3. Log in");
+        System.out.println("4. Exit");
+        System.out.println(" ");
+    }
+
     public static void loginAction() {
-        System.out.println("Hello and welcome! Please enter your name!");
+        boolean exit = false;
+        while (!exit) {
+            openingMessage();
+            System.out.println("Please enter the your choice (the number!): ");
+            int choice = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (choice) {
+                case 1:
+                    addUser();
+                    break;
+                case 2:
+                    deleteUser();
+                    break;
+                case 3:
+                    login();
+                    exit = true;
+                    break;
+                case 4:
+                    exit = true;
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please try again!");
+                    break;
+            }
+        }
+    }
+
+    public static void addUser() {
+
+        System.out.println("Please enter the username for the new user: ");
+        String userInputName = scanner.nextLine();
+
         boolean foundUser = false;
 
-        String userInputName = scanner.nextLine();
         if (!userInputName.isEmpty()) {
             for (User element : userArrayList) {
                 if (element.userName.equals(userInputName)) {
                     foundUser = true;
+                    System.out.println("Sorry, but " + userInputName + "already has an account registered.");
+                    break;
+                }
+
+                if (!foundUser) {
+                    System.out.println("To register an account, please enter a password!");
+                    String userInputPassword = scanner.nextLine();
+
+                    System.out.println("Please confirm your password!");
+                    String userInputPassword2 = scanner.nextLine();
+
+                    if (userInputPassword.equals(userInputPassword2) && !userInputPassword.isEmpty()) {
+                        userArrayList.add(new User(userInputName,userInputPassword));
+
+                        String filePath = "userList.txt";
+
+                        try {
+                            BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
+                            for (User user : userArrayList) {
+                                writer.write(user.userName + " - " + user.password + "\n");
+                            }
+                            writer.close(); // VERY IMPORTANT, otherwise the save is not complete
+
+                        } catch (Exception e) {
+                            System.out.println("An error occurred while writing to the file.");
+                            e.printStackTrace();
+                        }
+                    } else {
+                        System.out.println("Passwords do not match. Please try again!");
+                    }
                 }
             }
         }
-        System.out.println(userInputName + foundUser);
+    }
+    public static void login() {
+
+        System.out.println("Please enter your username: ");
+        String userInputName = scanner.nextLine();
+        boolean foundUser = false;
+
+        if (!userInputName.isEmpty()) {
+            for (User element : userArrayList) {
+                if (element.userName.equals(userInputName)) {
+                    foundUser = true;
+                    System.out.println("Please enter the password for " + userInputName);
+                    String userInputPassword = scanner.nextLine();
+
+                    boolean authenticated = authenticateUser(userInputName, userInputPassword);
+
+                    if (authenticated) {
+                        System.out.println("Login successful. Welcome, " +userInputName);
+
+                        while(true) {
+
+                            welcomeMessage();
+
+                            System.out.print("Enter a command (or 'exit' to save and exit): ");
+
+                            String userInput = scanner.nextLine();
+
+                            if (userInput.equals("add")) {
+                                addTask();
+                            } else if (userInput.equals("delete")) {
+                                deleteTask();
+                            } else if (userInput.equals("complete")) {
+                                completeTask();
+                            } else if (userInput.equals("list")) {
+                                listTask();
+                            } else if (userInput.equals("exit")) {
+                                exitAndSave();
+                                break;
+                            } else {
+                                System.out.println("Sorry, I did not catch that!");
+                            }
+                        }
+                    } else {
+                        System.out.println("Invalid password. Please try again.");
+                    }
+                }
+
+                    break;
+                }
+            }
+        }
+    public static void deleteUser() {
+        System.out.println("Please enter the username of the user to delete: ");
+        String username = scanner.nextLine();
+
+        boolean foundUser = false;
+        for (User user : userArrayList) {
+            if (user.userName.equals(username)) {
+                userArrayList.remove(user);
+                foundUser = true;
+                break;
+            }
+        }
 
         if (foundUser) {
-            System.out.println("Please enter the password for " + userInputName);
-            String userInputPassword = scanner.nextLine();
-        }
-
-        else if (!foundUser) {
-            System.out.println("I could not find a user with that name. To register one, please enter a password!");
-            String userInputPassword = scanner.nextLine();
-
-            System.out.println("Please confirm your password!");
-            String userInputPassword2 = scanner.nextLine();
-
-            if (userInputPassword.equals(userInputPassword2)) {
-                userArrayList.add(new User(userInputName,userInputPassword));
-
-                String filePath = "userList.txt";
-
-                try {
-                    BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
-                    for (User user : userArrayList) {
-                        writer.write(user.userName + " - " + user.password + "\n");
-                    }
-                    writer.close(); // VERY IMPORTANT, otherwise the save is not complete
-
-                } catch (Exception e) {
-                    System.out.println("An error occurred while writing to the file.");
-                    e.printStackTrace();
+            String filePath = "userList.txt";
+            try {
+                BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
+                for (User user : userArrayList) {
+                    writer.write(user.userName + " - " + user.password + "\n");
                 }
-            } else {
-                System.out.println("Passwords do not match. Please try again!");
+                writer.close();
+            } catch (IOException e) {
+                System.out.println("An error occurred while writing to the file.");
+                e.printStackTrace();
             }
+
+            System.out.println("User " + username + " has been deleted successfully!");
+        } else {
+            System.out.println("User " + username + " does not exist. Deletion failed.");
         }
     }
 
@@ -269,26 +394,6 @@ public class Main {
 
             loginAction();
 
-            welcomeMessage();
-
-            System.out.print("Enter a command (or 'exit' to save and exit): ");
-
-            String userInput = scanner.nextLine();
-
-            if (userInput.equals("add")) {
-                addTask();
-            } else if (userInput.equals("delete")) {
-                deleteTask();
-            } else if (userInput.equals("complete")) {
-                completeTask();
-            } else if (userInput.equals("list")) {
-                listTask();
-            } else if (userInput.equals("exit")) {
-                exitAndSave();
-                break;
-            } else {
-                System.out.println("Sorry, I did not catch that!");
-            }
         }
     }
 }
