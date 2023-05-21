@@ -97,8 +97,8 @@ public class Main {
             }
         }
     }
-    public static void completeTask() {
-
+    public static void completeTask(String userInputName) {
+        System.out.println("You are currently logged in as " + userInputName);
         System.out.println("Please enter the ID of the task you would like to complete:");
 
         String userInputTaskNumber = scanner.next();
@@ -125,35 +125,39 @@ public class Main {
         }
 
     }
-    public static void listTask() {
+    public static void listTask(String userInputName) {
+        System.out.println("You are currently logged in as " + userInputName);
+
         if (taskList.size() == 0) {
             System.out.println("Your to-do list is empty. Please add an item to your list using the 'add' command!");
         } else {
-            System.out.println("Please enter the name of the user you want to list tasks for (or press enter to list all tasks):");
-            String userName = scanner.nextLine().trim();
-            if (!userName.isEmpty()) {
+//            System.out.println("Please enter the name of the user you want to list tasks for (or press enter to list all tasks):");
+//            String userName = scanner.nextLine().trim();
+            if (!userInputName.isEmpty()) {
                 // List tasks for a specific user
                 for (Task element : taskList) {
-                    if (element.assignedToUser.equals(userName)) {
+                    if (element.assignedToUser.equals(userInputName)) {
                         System.out.println("- " + element.getId() + " - " + element.name + " - " + (element.isComplete ? "completed" : "incomplete") + " - assigned to " + element.assignedToUser);
                     }
                 }
-            } else {
-                // List all tasks grouped by user
-                HashMap<String, ArrayList<Task>> tasksByUser = new HashMap<>();
-                for (Task element : taskList) {
-                    ArrayList<Task> tasksForUser = tasksByUser.getOrDefault(element.assignedToUser, new ArrayList<Task>());
-                    tasksForUser.add(element);
-                    tasksByUser.put(element.assignedToUser, tasksForUser);
-                }
-                for (String user : tasksByUser.keySet()) {
-                    System.out.println(user + ":");
-                    ArrayList<Task> tasksForUser = tasksByUser.get(user);
-                    for (Task task : tasksForUser) {
-                        System.out.println("- " + task.getId() + " - " + task.name + " - " + (task.isComplete ? "completed" : "incomplete") + " - assigned to " + task.assignedToUser);
-                    }
-                }
             }
+
+//            else {
+//                // List all tasks grouped by user
+//                HashMap<String, ArrayList<Task>> tasksByUser = new HashMap<>();
+//                for (Task element : taskList) {
+//                    ArrayList<Task> tasksForUser = tasksByUser.getOrDefault(element.assignedToUser, new ArrayList<Task>());
+//                    tasksForUser.add(element);
+//                    tasksByUser.put(element.assignedToUser, tasksForUser);
+//                }
+//                for (String user : tasksByUser.keySet()) {
+//                    System.out.println(user + ":");
+//                    ArrayList<Task> tasksForUser = tasksByUser.get(user);
+//                    for (Task task : tasksForUser) {
+//                        System.out.println("- " + task.getId() + " - " + task.name + " - " + (task.isComplete ? "completed" : "incomplete") + " - assigned to " + task.assignedToUser);
+//                    }
+//                }
+//            }
         }
     }
     public static void exitAndSave() {
@@ -296,9 +300,9 @@ public class Main {
                             } else if (userInput.equals("delete")) {
                                 deleteTask(userInputName);
                             } else if (userInput.equals("complete")) {
-                                completeTask();
+                                completeTask(userInputName);
                             } else if (userInput.equals("list")) {
-                                listTask();
+                                listTask(userInputName);
                             } else if (userInput.equals("exit")) {
                                 exitAndSave();
                                 break;
