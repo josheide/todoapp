@@ -30,36 +30,37 @@ public class Main {
         }
         return false;
     }
-    public static void addTask() {
+    public static void addTask(String userInputName) {
+        System.out.println("You are currently logged in as " + userInputName);
         System.out.println("Please type the task that you would like to add!");
         String userTask = scanner.nextLine();
 
         if (!userTask.isEmpty()) {
-            System.out.println("Please type the name of the user the task is assigned to!");
-            String userAssigned = scanner.nextLine();
 
-            if (!userAssigned.isEmpty()) {
-                taskList.add(new Task(nextID, userTask, false, userAssigned));
+            if (!userInputName.isEmpty()) {
+                taskList.add(new Task(nextID, userTask, false, userInputName));
                 System.out.println(userTask + " has been added with the unique identifier: " + nextID); //
                 nextID++;
 
-            } else if (userAssigned.isEmpty()) {
-                System.out.println("You must assign the task to a person! Please try to add this task again!");
             }
+//            else if (userInputName.isEmpty()) {
+//                System.out.println("You must assign the task to a person! Please try to add this task again!");
+//            }
         } else {
             System.out.println("You cannot enter an empty field as a task, please try again!");
         }
     }
 
-    public static void deleteTask() {
-        System.out.println("Please enter the name of the user you want to delete the task of");
-        String userName = scanner.nextLine();
+    public static void deleteTask(String userInputName) {
+        System.out.println("You are currently logged in as " + userInputName + " and you have the following items on your to do list: ");
 
-        if (!userName.isEmpty()) {
+        if (!userInputName.isEmpty()) {
             boolean foundUser = false;
+
             for (Task element : taskList) {
-                if (element.assignedToUser.equals(userName)) {
+                if (element.assignedToUser.equals(userInputName)) {
                     foundUser = true;
+
                     if (element.isComplete) {
                         System.out.println("- " + element.getId() + " - " + element.name + " - completed by " + element.assignedToUser);
                     } else {
@@ -68,7 +69,7 @@ public class Main {
                 }
             }
             if (!foundUser) {
-                System.out.println("There are no tasks saved for the user: " + userName);
+                System.out.println("There are no tasks saved for the user: " + userInputName);
             } else {
                 System.out.println("Please enter the ID of the task you would like to remove:");
 
@@ -80,7 +81,7 @@ public class Main {
 
                     boolean foundTask = false;
                     for (Task task : taskList) {
-                        if (task.getId() == taskNumber && task.assignedToUser.equals(userName)) {
+                        if (task.getId() == taskNumber && task.assignedToUser.equals(userInputName)) {
                             taskList.remove(task);
                             foundTask = true;
                             System.out.println(task.name + " has been removed from the to-do list.");
@@ -221,27 +222,28 @@ public class Main {
             for (User element : userArrayList) {
                 if (element.userName.equals(userInputName)) {
                     foundUser = true;
-                    System.out.println("Sorry, but " + userInputName + "already has an account registered.");
+                    System.out.println("Sorry, but " + userInputName + " already has an account registered.");
                     break;
                 }
+            }
 
-                if (!foundUser) {
-                    System.out.println("To register an account, please enter a password!");
-                    String userInputPassword = scanner.nextLine();
+            if (!foundUser) {
+                System.out.println("To register an account, please enter a password!");
+                String userInputPassword = scanner.nextLine();
 
-                    System.out.println("Please confirm your password!");
-                    String userInputPassword2 = scanner.nextLine();
+                System.out.println("Please confirm your password!");
+                String userInputPassword2 = scanner.nextLine();
 
-                    if (userInputPassword.equals(userInputPassword2) && !userInputPassword.isEmpty()) {
-                        userArrayList.add(new User(userInputName,userInputPassword));
+                if (userInputPassword.equals(userInputPassword2) && !userInputPassword.isEmpty()) {
+                    userArrayList.add(new User(userInputName,userInputPassword));
 
-                        String filePath = "userList.txt";
+                    String filePath = "userList.txt";
 
-                        try {
-                            BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
-                            for (User user : userArrayList) {
-                                writer.write(user.userName + " - " + user.password + "\n");
-                            }
+                    try {
+                        BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
+                        for (User user : userArrayList) {
+                            writer.write(user.userName + " - " + user.password + "\n");
+                        }
                             writer.close(); // VERY IMPORTANT, otherwise the save is not complete
 
                         } catch (Exception e) {
@@ -254,7 +256,7 @@ public class Main {
                 }
             }
         }
-    }
+
     public static void login() {
 
         System.out.println("Please enter your username: ");
@@ -265,13 +267,21 @@ public class Main {
             for (User element : userArrayList) {
                 if (element.userName.equals(userInputName)) {
                     foundUser = true;
-                    System.out.println("Please enter the password for " + userInputName);
-                    String userInputPassword = scanner.nextLine();
+                    break;
 
-                    boolean authenticated = authenticateUser(userInputName, userInputPassword);
+                }
+            }
 
-                    if (authenticated) {
-                        System.out.println("Login successful. Welcome, " +userInputName);
+            if (foundUser){
+
+                System.out.println("Please enter the password for " + userInputName);
+                String userInputPassword = scanner.nextLine();
+
+                boolean authenticated = authenticateUser(userInputName, userInputPassword);
+
+            if (authenticated) {
+
+                System.out.println("Login successful. Welcome, " +userInputName);
 
                         while(true) {
 
@@ -282,9 +292,9 @@ public class Main {
                             String userInput = scanner.nextLine();
 
                             if (userInput.equals("add")) {
-                                addTask();
+                                addTask(userInputName);
                             } else if (userInput.equals("delete")) {
-                                deleteTask();
+                                deleteTask(userInputName);
                             } else if (userInput.equals("complete")) {
                                 completeTask();
                             } else if (userInput.equals("list")) {
@@ -299,9 +309,8 @@ public class Main {
                     } else {
                         System.out.println("Invalid password. Please try again.");
                     }
-                }
-
-                    break;
+                } else{
+            System.out.println("Sorry, I could not find " + userInputName );
                 }
             }
         }
@@ -368,17 +377,19 @@ public class Main {
             if (!userListFile.exists()) {
                 userListFile.createNewFile();
             }
-            BufferedReader userReader = new BufferedReader(new FileReader(userListFile));
-            String userLine;
-            while ((userLine = userReader.readLine()) != null) {
-                String[] userData = userLine.split(" - ");
-                String userName = userData[0];
-                String userPassword = userData[1];
-                User newUser = new User(userName, userPassword);
-                userArrayList.add(newUser);
+
+            try (BufferedReader userReader = new BufferedReader(new FileReader(userListFile))) {
+                String userLine;
+                while ((userLine = userReader.readLine()) != null) {
+                    String[] userData = userLine.split(" - ");
+                    String userName = userData[0];
+                    String userPassword = userData[1];
+                    User newUser = new User(userName, userPassword);
+                    userArrayList.add(newUser);
+                }
             }
-            userReader.close();
         } catch (IOException e) {
+            System.out.println("An error occurred while reading the user list file: " + e.getMessage());
             e.printStackTrace();
         }
 
