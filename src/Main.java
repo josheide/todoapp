@@ -98,7 +98,19 @@ public class Main {
         }
     }
     public static void completeTask(String userInputName) {
-        System.out.println("You are currently logged in as " + userInputName);
+        System.out.println("You are currently logged in as " + userInputName + " and you have the following items on your to do list: ");
+
+        for (Task element : taskList) {
+            if (element.assignedToUser.equals(userInputName)) {
+
+                if (element.isComplete) {
+                    System.out.println("- " + element.getId() + " - " + element.name + " - completed by " + element.assignedToUser);
+                } else {
+                    System.out.println("- " + element.getId() + " - " + element.name + " - incomplete, assigned to " + element.assignedToUser);
+                }
+            }
+        }
+
         System.out.println("Please enter the ID of the task you would like to complete:");
 
         String userInputTaskNumber = scanner.next();
@@ -109,13 +121,14 @@ public class Main {
 
             boolean foundTask = false;
             for (Task task : taskList) {
-                if (task.getId() == taskNumber) {
+                if (task.getId() == taskNumber && !task.isComplete) {
                     task.isComplete = true;
                     foundTask = true;
                     System.out.println("Congratulations, you completed: " + task.name);
                     break;
                 } else if (task.getId() == taskNumber && task.isComplete) {
                     System.out.println("You already completed " + task.name);
+                    foundTask = true;
                 }
             } if (!foundTask) {
                 System.out.println("There is no task with that ID");
@@ -123,8 +136,8 @@ public class Main {
         } catch (NumberFormatException e) {
             System.out.println("Invalid input. Please enter a valid task number.");
         }
-
     }
+
     public static void listTask(String userInputName) {
         System.out.println("You are currently logged in as " + userInputName);
 
@@ -190,7 +203,7 @@ public class Main {
         boolean exit = false;
         while (!exit) {
             openingMessage();
-            System.out.println("Please enter the your choice (the number!): ");
+            System.out.println("Please enter your choice (the number!): ");
             int choice = scanner.nextInt();
             scanner.nextLine();
 
@@ -320,7 +333,7 @@ public class Main {
         }
     public static void deleteUser() {
         System.out.println("Please enter the username of the user to delete: ");
-        String username = scanner.nextLine();
+        String username = scanner.nextLine()  ;
 
         boolean foundUser = false;
         for (User user : userArrayList) {
@@ -406,9 +419,7 @@ public class Main {
         nextID = maxID + 1;
 
         while (true) {
-
             loginAction();
-
         }
     }
 }
