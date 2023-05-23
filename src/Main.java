@@ -10,7 +10,7 @@ public class Main {
     static int nextID = 1;
     static Scanner scanner = new Scanner(System.in);
 
-    public static void welcomeMessage(){
+    public static void printWelcomeMessage(){
         String filePathWelcome = "welcomeText.txt";
         try (BufferedReader reader = new BufferedReader(new FileReader(filePathWelcome))) {
             String line;
@@ -43,9 +43,6 @@ public class Main {
                 nextID++;
 
             }
-//            else if (userInputName.isEmpty()) {
-//                System.out.println("You must assign the task to a person! Please try to add this task again!");
-//            }
         } else {
             System.out.println("You cannot enter an empty field as a task, please try again!");
         }
@@ -138,39 +135,19 @@ public class Main {
         }
     }
 
-    public static void listTask(String userInputName) {
+    public static void listTasks(String userInputName) {
         System.out.println("You are currently logged in as " + userInputName);
 
         if (taskList.size() == 0) {
             System.out.println("Your to-do list is empty. Please add an item to your list using the 'add' command!");
         } else {
-//            System.out.println("Please enter the name of the user you want to list tasks for (or press enter to list all tasks):");
-//            String userName = scanner.nextLine().trim();
             if (!userInputName.isEmpty()) {
-                // List tasks for a specific user
                 for (Task element : taskList) {
                     if (element.assignedToUser.equals(userInputName)) {
                         System.out.println("- " + element.getId() + " - " + element.name + " - " + (element.isComplete ? "completed" : "incomplete") + " - assigned to " + element.assignedToUser);
                     }
                 }
             }
-
-//            else {
-//                // List all tasks grouped by user
-//                HashMap<String, ArrayList<Task>> tasksByUser = new HashMap<>();
-//                for (Task element : taskList) {
-//                    ArrayList<Task> tasksForUser = tasksByUser.getOrDefault(element.assignedToUser, new ArrayList<Task>());
-//                    tasksForUser.add(element);
-//                    tasksByUser.put(element.assignedToUser, tasksForUser);
-//                }
-//                for (String user : tasksByUser.keySet()) {
-//                    System.out.println(user + ":");
-//                    ArrayList<Task> tasksForUser = tasksByUser.get(user);
-//                    for (Task task : tasksForUser) {
-//                        System.out.println("- " + task.getId() + " - " + task.name + " - " + (task.isComplete ? "completed" : "incomplete") + " - assigned to " + task.assignedToUser);
-//                    }
-//                }
-//            }
         }
     }
     public static void exitAndSave() {
@@ -254,25 +231,16 @@ public class Main {
                 if (userInputPassword.equals(userInputPassword2) && !userInputPassword.isEmpty()) {
                     userArrayList.add(new User(userInputName,userInputPassword));
 
-                    String filePath = "userList.txt";
 
-                    try {
-                        BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
-                        for (User user : userArrayList) {
-                            writer.write(user.userName + " - " + user.password + "\n");
-                        }
-                            writer.close(); // VERY IMPORTANT, otherwise the save is not complete
+                    saveUsers();
 
-                        } catch (Exception e) {
-                            System.out.println("An error occurred while writing to the file.");
-                            e.printStackTrace();
                         }
                     } else {
                         System.out.println("Passwords do not match. Please try again!");
                     }
                 }
             }
-        }
+
 
     public static void login() {
 
@@ -302,7 +270,7 @@ public class Main {
 
                         while(true) {
 
-                            welcomeMessage();
+                            printWelcomeMessage();
 
                             System.out.print("Enter a command (or 'exit' to save and exit): ");
 
@@ -315,7 +283,7 @@ public class Main {
                             } else if (userInput.equals("complete")) {
                                 completeTask(userInputName);
                             } else if (userInput.equals("list")) {
-                                listTask(userInputName);
+                                listTasks(userInputName);
                             } else if (userInput.equals("exit")) {
                                 exitAndSave();
                                 break;
@@ -327,10 +295,11 @@ public class Main {
                         System.out.println("Invalid password. Please try again.");
                     }
                 } else{
-            System.out.println("Sorry, I could not find " + userInputName );
+                    System.out.println("Sorry, I could not find " + userInputName );
                 }
             }
         }
+
     public static void deleteUser() {
         System.out.println("Please enter the username of the user to delete: ");
         String username = scanner.nextLine()  ;
@@ -344,22 +313,36 @@ public class Main {
             }
         }
 
-        if (foundUser) {
-            String filePath = "userList.txt";
-            try {
-                BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
-                for (User user : userArrayList) {
-                    writer.write(user.userName + " - " + user.password + "\n");
-                }
-                writer.close();
-            } catch (IOException e) {
-                System.out.println("An error occurred while writing to the file.");
-                e.printStackTrace();
+        List<Task> tasksToRemove = new ArrayList<>();
+
+        for (Task task : taskList) {
+            if (task.assignedToUser.equals(username)) {
+                tasksToRemove.add(task);
             }
+        }
+        taskList.removeAll(tasksToRemove);
+        exitAndSave();
+
+        if (foundUser) {
+            saveUsers();
 
             System.out.println("User " + username + " has been deleted successfully!");
         } else {
             System.out.println("User " + username + " does not exist. Deletion failed.");
+        }
+    }
+
+    public static void saveUsers(){
+        String filePath = "userList.txt";
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
+            for (User user : userArrayList) {
+                writer.write(user.userName + " - " + user.password + "\n");
+            }
+            writer.close();
+        } catch (IOException e) {
+            System.out.println("An error occurred while writing to the file.");
+            e.printStackTrace();
         }
     }
 
