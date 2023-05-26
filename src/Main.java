@@ -2,13 +2,35 @@
 // then press Enter. You can now see whitespace characters in your code.
 import java.util.*;
 import java.io.*;
+import javax.swing.JFrame;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+
 
 public class Main {
-
     static ArrayList<Task> taskList = new ArrayList<Task>();
     static ArrayList<User> userArrayList = new ArrayList<User>();
     static int nextID = 1;
     static Scanner scanner = new Scanner(System.in);
+
+    public static void openGUI() {
+        JFrame frame = new JFrame("To-Do List Application");
+        frame.setSize(800, 600);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
+
+        JButton button = new JButton("Click Me");
+        button.setBounds(150, 100, 100, 30);
+        frame.add(button);
+        frame.setVisible(true);
+
+        JCheckBox checkBox = new JCheckBox("Enable Option");
+        checkBox.setBounds(150, 100, 150, 30);
+        frame.add(checkBox);
+        frame.setVisible(true);
+
+    }
+
 
     public static void printWelcomeMessage(){
         String filePathWelcome = "welcomeText.txt";
@@ -231,7 +253,6 @@ public class Main {
                 if (userInputPassword.equals(userInputPassword2) && !userInputPassword.isEmpty()) {
                     userArrayList.add(new User(userInputName,userInputPassword));
 
-
                     saveUsers();
 
                         }
@@ -276,7 +297,9 @@ public class Main {
 
                             String userInput = scanner.nextLine();
 
-                            if (userInput.equals("add")) {
+                            if (userInput.equals("GUI")) {
+                                openGUI();
+                            } else if (userInput.equals("add")) {
                                 addTask(userInputName);
                             } else if (userInput.equals("delete")) {
                                 deleteTask(userInputName);
