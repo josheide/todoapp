@@ -2,10 +2,10 @@
 // then press Enter. You can now see whitespace characters in your code.
 import java.util.*;
 import java.io.*;
-import javax.swing.JFrame;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-
+import javax.swing.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FlowLayout;
 
 public class Main {
     static ArrayList<Task> taskList = new ArrayList<Task>();
@@ -13,23 +13,7 @@ public class Main {
     static int nextID = 1;
     static Scanner scanner = new Scanner(System.in);
 
-    public static void openGUI() {
-        JFrame frame = new JFrame("To-Do List Application");
-        frame.setSize(800, 600);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
 
-        JButton button = new JButton("Click Me");
-        button.setBounds(150, 100, 100, 30);
-        frame.add(button);
-        frame.setVisible(true);
-
-        JCheckBox checkBox = new JCheckBox("Enable Option");
-        checkBox.setBounds(150, 100, 150, 30);
-        frame.add(checkBox);
-        frame.setVisible(true);
-
-    }
 
 
     public static void printWelcomeMessage(){
@@ -298,7 +282,7 @@ public class Main {
                             String userInput = scanner.nextLine();
 
                             if (userInput.equals("GUI")) {
-                                openGUI();
+                                GUI.openGUI();
                             } else if (userInput.equals("add")) {
                                 addTask(userInputName);
                             } else if (userInput.equals("delete")) {
@@ -370,6 +354,9 @@ public class Main {
     }
 
     public static void main(String[] args) {
+
+        GUI gui = new GUI(); // This will be used later as we pass functionality
+
         String fileName = "todoListFile.txt";
         File todolist = new File(fileName);
 
