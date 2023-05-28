@@ -13,8 +13,28 @@ public class Main {
     static int nextID = 1;
     static Scanner scanner = new Scanner(System.in);
 
+    public static void displayTasksGUI(String userInputName) {
+        JFrame frame = new JFrame("Task List");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(400, 300);
+        frame.setLayout(new FlowLayout());
 
+        DefaultListModel<String> taskListModel = new DefaultListModel<>();
 
+        for (Task task : taskList) {
+            if (task.assignedToUser.equals(userInputName)) {
+                String taskStatus = task.isComplete ? "completed" : "incomplete";
+                String taskInfo = task.getId() + " - " + task.name + " - " + taskStatus;
+                taskListModel.addElement(taskInfo);
+            }
+        }
+
+        JList<String> taskList = new JList<>(taskListModel);
+        JScrollPane scrollPane = new JScrollPane(taskList);
+        frame.add(scrollPane);
+
+        frame.setVisible(true);
+    }
 
     public static void printWelcomeMessage(){
         String filePathWelcome = "welcomeText.txt";
@@ -282,7 +302,7 @@ public class Main {
                             String userInput = scanner.nextLine();
 
                             if (userInput.equals("GUI")) {
-                                GUI.openGUI();
+                                displayTasksGUI(userInputName);
                             } else if (userInput.equals("add")) {
                                 addTask(userInputName);
                             } else if (userInput.equals("delete")) {
