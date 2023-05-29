@@ -15,7 +15,6 @@ public class Task {
     int getId() {
         return id;
     }
-
     public String getName() {
         return name;
     }

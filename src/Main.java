@@ -14,24 +14,21 @@ public class Main {
     static Scanner scanner = new Scanner(System.in);
 
     public static void displayTasksGUI(String userInputName) {
-        JFrame frame = new JFrame("Task List");
+        JFrame frame = new JFrame("Task List of " + userInputName);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(400, 300);
-        frame.setLayout(new FlowLayout());
+        frame.setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
 
-        DefaultListModel<String> taskListModel = new DefaultListModel<>();
+        Font font = new Font("Montserrat", Font.PLAIN, 14);
 
         for (Task task : taskList) {
-            if (task.assignedToUser.equals(userInputName)) {
-                String taskStatus = task.isComplete ? "completed" : "incomplete";
-                String taskInfo = task.getId() + " - " + task.name + " - " + taskStatus;
-                taskListModel.addElement(taskInfo);
+            if (task.getAssignedToUser().equals(userInputName)) {
+                JCheckBox checkBox = new JCheckBox(task.getId() + " - " + task.getName());
+                checkBox.setFont(font);
+                checkBox.setSelected(task.isComplete());
+                frame.add(checkBox);
             }
         }
-
-        JList<String> taskList = new JList<>(taskListModel);
-        JScrollPane scrollPane = new JScrollPane(taskList);
-        frame.add(scrollPane);
 
         frame.setVisible(true);
     }
