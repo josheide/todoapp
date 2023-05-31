@@ -1,11 +1,14 @@
 // Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
 // then press Enter. You can now see whitespace characters in your code.
+import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.*;
 import java.io.*;
 import javax.swing.*;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
 
 public class Main {
     static ArrayList<Task> taskList = new ArrayList<Task>();
@@ -14,26 +17,67 @@ public class Main {
     static Scanner scanner = new Scanner(System.in);
 
     public static void displayTasksGUI(String userInputName) {
-        JFrame frame = new JFrame("Task List of " + userInputName);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 300);
-        frame.setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
+        JFrame frame = new JFrame("Task List");
+        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                exitAndSave();
+                frame.dispose();
+            }
+        });
 
-        Font font = new Font("Montserrat", Font.PLAIN, 14);
+        frame.setSize(400, 400);
+        frame.setLayout(new BorderLayout());
+
+        JPanel buttonPanel = new JPanel();
+        JButton addButton = new JButton("Add Task");
+        buttonPanel.add(addButton);
+
+        JPanel taskPanel = new JPanel();
+        taskPanel.setLayout(new BoxLayout(taskPanel, BoxLayout.Y_AXIS));
+        JScrollPane scrollPane = new JScrollPane(taskPanel);
 
         for (Task task : taskList) {
             if (task.getAssignedToUser().equals(userInputName)) {
-                JCheckBox checkBox = new JCheckBox(task.getId() + " - " + task.getName());
-                checkBox.setFont(font);
-                checkBox.setSelected(task.isComplete());
-                frame.add(checkBox);
+                JCheckBox checkBox = createCheckBox(task);
+                taskPanel.add(checkBox);
             }
         }
+
+        // Add panels to the frame
+        frame.add(buttonPanel, BorderLayout.NORTH);
+        frame.add(scrollPane, BorderLayout.CENTER);
+
+        // Add task button functionality
+        addButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String taskName = JOptionPane.showInputDialog(frame, "Enter task name:");
+                if (taskName != null && !taskName.isEmpty()) {
+                    int taskId = nextID + 1;
+                    Task newTask = new Task(taskId, taskName, false, userInputName);
+                    taskList.add(newTask);
+                    JCheckBox checkBox = createCheckBox(newTask);
+                    taskPanel.add(checkBox);
+                    frame.revalidate();
+                    nextID += 1;
+                }
+            }
+        });
 
         frame.setVisible(true);
     }
 
-    public static void printWelcomeMessage(){
+    private static JCheckBox createCheckBox(Task task) {
+        JCheckBox checkBox = new JCheckBox(task.getId() + " - " + task.getName());
+        checkBox.setFont(new Font("Montserrat", Font.PLAIN, 14));
+        checkBox.setSelected(task.isComplete());
+        return checkBox;
+    }
+
+
+    public static void printWelcomeMessage() {
         String filePathWelcome = "welcomeText.txt";
         try (BufferedReader reader = new BufferedReader(new FileReader(filePathWelcome))) {
             String line;
@@ -53,6 +97,7 @@ public class Main {
         }
         return false;
     }
+
     public static void addTask(String userInputName) {
         System.out.println("You are currently logged in as " + userInputName);
         System.out.println("Please type the task that you would like to add!");
@@ -117,6 +162,7 @@ public class Main {
             }
         }
     }
+
     public static void completeTask(String userInputName) {
         System.out.println("You are currently logged in as " + userInputName + " and you have the following items on your to do list: ");
 
@@ -150,7 +196,8 @@ public class Main {
                     System.out.println("You already completed " + task.name);
                     foundTask = true;
                 }
-            } if (!foundTask) {
+            }
+            if (!foundTask) {
                 System.out.println("There is no task with that ID");
             }
         } catch (NumberFormatException e) {
@@ -173,6 +220,7 @@ public class Main {
             }
         }
     }
+
     public static void exitAndSave() {
 
         String filePath = "todoListFile.txt";
@@ -189,6 +237,7 @@ public class Main {
             e.printStackTrace();
         }
     }
+
 
     public static void openingMessage(){
         System.out.println("Welcome! What would you like to do?");
