@@ -11,83 +11,11 @@ import java.awt.event.ActionListener;
 import java.util.List;
 
 public class Main {
-    static ArrayList<Task> taskList = new ArrayList<Task>();
+
     static ArrayList<User> userArrayList = new ArrayList<User>();
-    static int nextID = 1;
     static Scanner scanner = new Scanner(System.in);
 
-    public static void displayTasksGUI(String userInputName) {
-        JFrame frame = new JFrame("Task List");
-        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        frame.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                exitAndSave();
-                frame.dispose();
-            }
-        });
 
-        frame.setSize(400, 400);
-        frame.setLayout(new BorderLayout());
-
-        JPanel buttonPanel = new JPanel();
-        JButton addButton = new JButton("Add Task");
-        buttonPanel.add(addButton);
-
-        JPanel taskPanel = new JPanel();
-        taskPanel.setLayout(new BoxLayout(taskPanel, BoxLayout.Y_AXIS));
-        JScrollPane scrollPane = new JScrollPane(taskPanel);
-
-        for (Task task : taskList) {
-            if (task.getAssignedToUser().equals(userInputName)) {
-                JCheckBox checkBox = createCheckBox(task);
-                taskPanel.add(checkBox);
-            }
-        }
-
-        // Add panels to the frame
-        frame.add(buttonPanel, BorderLayout.NORTH);
-        frame.add(scrollPane, BorderLayout.CENTER);
-
-        // Add task button functionality
-        addButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String taskName = JOptionPane.showInputDialog(frame, "Enter task name:");
-                if (taskName != null && !taskName.isEmpty()) {
-                    int taskId = nextID + 1;
-                    Task newTask = new Task(taskId, taskName, false, userInputName);
-                    taskList.add(newTask);
-                    JCheckBox checkBox = createCheckBox(newTask);
-                    taskPanel.add(checkBox);
-                    frame.revalidate();
-                    nextID += 1;
-                }
-            }
-        });
-
-        frame.setVisible(true);
-    }
-
-    private static JCheckBox createCheckBox(Task task) {
-        JCheckBox checkBox = new JCheckBox(task.getId() + " - " + task.getName());
-        checkBox.setFont(new Font("Montserrat", Font.PLAIN, 14));
-        checkBox.setSelected(task.isComplete());
-        return checkBox;
-    }
-
-
-    public static void printWelcomeMessage() {
-        String filePathWelcome = "welcomeText.txt";
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePathWelcome))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                System.out.println(line);
-            }
-        } catch (IOException e) {
-            System.out.println("An error occurred while reading the file: " + e.getMessage());
-        }
-    }
 
     public static boolean authenticateUser(String username, String password) {
         for (User element : userArrayList) {
@@ -98,31 +26,13 @@ public class Main {
         return false;
     }
 
-    public static void addTask(String userInputName) {
-        System.out.println("You are currently logged in as " + userInputName);
-        System.out.println("Please type the task that you would like to add!");
-        String userTask = scanner.nextLine();
-
-        if (!userTask.isEmpty()) {
-
-            if (!userInputName.isEmpty()) {
-                taskList.add(new Task(nextID, userTask, false, userInputName));
-                System.out.println(userTask + " has been added with the unique identifier: " + nextID); //
-                nextID++;
-
-            }
-        } else {
-            System.out.println("You cannot enter an empty field as a task, please try again!");
-        }
-    }
-
     public static void deleteTask(String userInputName) {
         System.out.println("You are currently logged in as " + userInputName + " and you have the following items on your to do list: ");
 
         if (!userInputName.isEmpty()) {
             boolean foundUser = false;
 
-            for (Task element : taskList) {
+            for (Task element : TodoApp.taskList) {
                 if (element.assignedToUser.equals(userInputName)) {
                     foundUser = true;
 
@@ -145,9 +55,9 @@ public class Main {
                     int taskNumber = Integer.parseInt(userInputTaskNumber);
 
                     boolean foundTask = false;
-                    for (Task task : taskList) {
+                    for (Task task : TodoApp.taskList) {
                         if (task.getId() == taskNumber && task.assignedToUser.equals(userInputName)) {
-                            taskList.remove(task);
+                            TodoApp.taskList.remove(task);
                             foundTask = true;
                             System.out.println(task.name + " has been removed from the to-do list.");
                             break;
@@ -166,7 +76,7 @@ public class Main {
     public static void completeTask(String userInputName) {
         System.out.println("You are currently logged in as " + userInputName + " and you have the following items on your to do list: ");
 
-        for (Task element : taskList) {
+        for (Task element : TodoApp.taskList) {
             if (element.assignedToUser.equals(userInputName)) {
 
                 if (element.isComplete) {
@@ -186,7 +96,7 @@ public class Main {
             int taskNumber = Integer.parseInt(userInputTaskNumber);
 
             boolean foundTask = false;
-            for (Task task : taskList) {
+            for (Task task : TodoApp.taskList) {
                 if (task.getId() == taskNumber && !task.isComplete) {
                     task.isComplete = true;
                     foundTask = true;
@@ -208,11 +118,11 @@ public class Main {
     public static void listTasks(String userInputName) {
         System.out.println("You are currently logged in as " + userInputName);
 
-        if (taskList.size() == 0) {
+        if (TodoApp.taskList.size() == 0) {
             System.out.println("Your to-do list is empty. Please add an item to your list using the 'add' command!");
         } else {
             if (!userInputName.isEmpty()) {
-                for (Task element : taskList) {
+                for (Task element : TodoApp.taskList) {
                     if (element.assignedToUser.equals(userInputName)) {
                         System.out.println("- " + element.getId() + " - " + element.name + " - " + (element.isComplete ? "completed" : "incomplete") + " - assigned to " + element.assignedToUser);
                     }
@@ -221,37 +131,10 @@ public class Main {
         }
     }
 
-    public static void exitAndSave() {
-
-        String filePath = "todoListFile.txt";
-
-        try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
-            for (Task task : taskList) {
-                writer.write(task.getId() + " - " + task.name + " - " + task.isComplete + " - " + task.assignedToUser + "\n");
-            }
-            writer.close(); // VERY IMPORTANT, otherwise the save is not complete
-
-        } catch (Exception e) {
-            System.out.println("An error occurred while writing to the file.");
-            e.printStackTrace();
-        }
-    }
-
-
-    public static void openingMessage(){
-        System.out.println("Welcome! What would you like to do?");
-        System.out.println("1. Add a new user");
-        System.out.println("2. Delete an existing user");
-        System.out.println("3. Log in");
-        System.out.println("4. Exit");
-        System.out.println(" ");
-    }
-
     public static void loginAction() {
         boolean exit = false;
         while (!exit) {
-            openingMessage();
+            CLI.printOpeningMessage();
             System.out.println("Please enter your choice (the number!): ");
             int choice = scanner.nextInt();
             scanner.nextLine();
@@ -301,17 +184,14 @@ public class Main {
                 String userInputPassword2 = scanner.nextLine();
 
                 if (userInputPassword.equals(userInputPassword2) && !userInputPassword.isEmpty()) {
-                    userArrayList.add(new User(userInputName,userInputPassword));
-
+                    userArrayList.add(new User(userInputName, userInputPassword));
                     saveUsers();
-
-                        }
-                    } else {
-                        System.out.println("Passwords do not match. Please try again!");
-                    }
+                } else {
+                    System.out.println("Passwords do not match. Please try again!");
                 }
             }
-
+        }
+    }
 
     public static void login() {
 
@@ -341,16 +221,16 @@ public class Main {
 
                         while(true) {
 
-                            printWelcomeMessage();
+                            CLI.printWelcomeMessage();
 
                             System.out.print("Enter a command (or 'exit' to save and exit): ");
 
                             String userInput = scanner.nextLine();
 
                             if (userInput.equals("GUI")) {
-                                displayTasksGUI(userInputName);
+                                GUI.displayTasksGUI(userInputName);
                             } else if (userInput.equals("add")) {
-                                addTask(userInputName);
+                                CLI.addTaskCLI(userInputName);
                             } else if (userInput.equals("delete")) {
                                 deleteTask(userInputName);
                             } else if (userInput.equals("complete")) {
@@ -358,7 +238,7 @@ public class Main {
                             } else if (userInput.equals("list")) {
                                 listTasks(userInputName);
                             } else if (userInput.equals("exit")) {
-                                exitAndSave();
+                                TodoApp.exitAndSave();
                                 break;
                             } else {
                                 System.out.println("Sorry, I did not catch that!");
@@ -388,13 +268,13 @@ public class Main {
 
         List<Task> tasksToRemove = new ArrayList<>();
 
-        for (Task task : taskList) {
+        for (Task task : TodoApp.taskList) {
             if (task.assignedToUser.equals(username)) {
                 tasksToRemove.add(task);
             }
         }
-        taskList.removeAll(tasksToRemove);
-        exitAndSave();
+        TodoApp.taskList.removeAll(tasksToRemove);
+        TodoApp.exitAndSave();
 
         if (foundUser) {
             saveUsers();
@@ -438,12 +318,12 @@ public class Main {
             while ((line = reader.readLine()) != null) {
                 String[] taskData = line.split(" - ");
                 boolean taskHasNoID = taskData.length == 3;
-                int taskID = taskHasNoID ? nextID++ : Integer.parseInt(taskData[0]);
+                int taskID = taskHasNoID ? TodoApp.nextID++ : Integer.parseInt(taskData[0]);
                 String taskName = taskData[taskHasNoID ? 0 : 1];
                 boolean taskIsComplete = Boolean.parseBoolean(taskData[taskHasNoID ? 1 : 2]);
                 String taskUser = taskData[taskHasNoID ? 2 : 3];
                 Task newTask = new Task(taskID, taskName, taskIsComplete, taskUser);
-                taskList.add(newTask);
+                TodoApp.taskList.add(newTask);
                 // in the last version taskData had 3 properties. If the reader finds tasks without IDs, it assigns them an ID and shifts all the other properties to their appropriate locations.
             }
         } catch (IOException e) {
@@ -470,12 +350,12 @@ public class Main {
         }
 
         int maxID = 0;
-        for (Task task : taskList) {
+        for (Task task : TodoApp.taskList) {
             if (task.getId() > maxID) {
                 maxID = task.getId();
             }
         }
-        nextID = maxID + 1;
+        TodoApp.nextID = maxID + 1;
 
         while (true) {
             loginAction();

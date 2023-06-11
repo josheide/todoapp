@@ -1,33 +1,74 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class GUI {
-    public static void openGUI() {
-        JFrame frame = new JFrame("To-Do List Application");
-        frame.setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
 
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+    static JCheckBox createCheckBox(Task task) {
+        JCheckBox checkBox = new JCheckBox(task.getId() + " - " + task.getName());
+        checkBox.setFont(new Font("Montserrat", Font.PLAIN, 14));
+        checkBox.setSelected(task.isComplete());
+        return checkBox;
+    }
 
-        JCheckBox checkBox1 = new JCheckBox("Fontos tennivalo");
-        checkBox1.setFont(new Font("Montserrat", Font.PLAIN, 16));
-        checkBox1.setForeground(Color.DARK_GRAY);
-        panel.add(checkBox1);
+    public static void displayTasksGUI(String userInputName) {
+        JFrame frame = new JFrame("Task List");
+        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                TodoApp.exitAndSave();
+                frame.dispose();
+            }
+        });
 
-        JCheckBox checkBox2 = new JCheckBox("Halaszthatatlan feladat");
-        checkBox2.setFont(new Font("Montserrat", Font.PLAIN, 16));
-        checkBox2.setForeground(Color.DARK_GRAY);
-        panel.add(checkBox2);
+        frame.setSize(400, 400);
+        frame.setLayout(new BorderLayout());
 
-        JCheckBox checkBox3 = new JCheckBox("Az asszony azt mondta, hogy...");
-        checkBox3.setFont(new Font("Montserrat", Font.PLAIN, 16));
-        checkBox3.setForeground(Color.DARK_GRAY);
-        panel.add(checkBox3);
+        JPanel buttonPanel = new JPanel();
+        JButton addButton = new JButton("Add Task");
+        buttonPanel.add(addButton);
 
-        frame.add(panel);
+        JPanel taskPanel = new JPanel();
+        taskPanel.setLayout(new BoxLayout(taskPanel, BoxLayout.Y_AXIS));
+        JScrollPane scrollPane = new JScrollPane(taskPanel);
 
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 300);
+        for (Task task : TodoApp.taskList) {
+            if (task.getAssignedToUser().equals(userInputName)) {
+                JCheckBox checkBox = GUI.createCheckBox(task);
+                taskPanel.add(checkBox);
+            }
+        }
+
+        // Add panels to the frame
+        frame.add(buttonPanel, BorderLayout.NORTH);
+        frame.add(scrollPane, BorderLayout.CENTER);
+
+        // Add task button functionality
+        addButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String taskName = JOptionPane.showInputDialog(frame, "Enter task name:");
+                if (taskName != null && !taskName.isEmpty()) {
+
+                    Task newTask = TodoApp.addTask(userInputName, taskName);
+
+                    if (newTask == null) {
+                        //TODO: Display error to user.
+                        return;
+                    }
+
+                    JCheckBox checkBox = GUI.createCheckBox(newTask);
+                    taskPanel.add(checkBox);
+                    frame.revalidate();
+
+                }
+            }
+        });
+
         frame.setVisible(true);
     }
 }
