@@ -24,6 +24,24 @@ public class TodoApp {
         return newTask;
     }
 
+    public static boolean completeTask (int taskNumber){
+        for (Task task : taskList) {
+            if (task.getId() != taskNumber) {
+                // Not the task we are looking for.
+                continue;
+            }
+            // We found the task we are looking for.
+            if (task.isComplete) {
+                return false; // task exists but you already completed it
+            }
+
+            task.isComplete = true;
+            return true;
+        }
+        // not found
+        return false;
+    }
+
     public static void exitAndSave() {
         String filePath = "todoListFile.txt";
         try {

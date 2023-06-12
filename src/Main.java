@@ -73,47 +73,47 @@ public class Main {
         }
     }
 
-    public static void completeTask(String userInputName) {
-        System.out.println("You are currently logged in as " + userInputName + " and you have the following items on your to do list: ");
-
-        for (Task element : TodoApp.taskList) {
-            if (element.assignedToUser.equals(userInputName)) {
-
-                if (element.isComplete) {
-                    System.out.println("- " + element.getId() + " - " + element.name + " - completed by " + element.assignedToUser);
-                } else {
-                    System.out.println("- " + element.getId() + " - " + element.name + " - incomplete, assigned to " + element.assignedToUser);
-                }
-            }
-        }
-
-        System.out.println("Please enter the ID of the task you would like to complete:");
-
-        String userInputTaskNumber = scanner.next();
-        scanner.nextLine(); // Without this line the program gets confused and acts as if I gave it an empty string as a command.
-
-        try {
-            int taskNumber = Integer.parseInt(userInputTaskNumber);
-
-            boolean foundTask = false;
-            for (Task task : TodoApp.taskList) {
-                if (task.getId() == taskNumber && !task.isComplete) {
-                    task.isComplete = true;
-                    foundTask = true;
-                    System.out.println("Congratulations, you completed: " + task.name);
-                    break;
-                } else if (task.getId() == taskNumber && task.isComplete) {
-                    System.out.println("You already completed " + task.name);
-                    foundTask = true;
-                }
-            }
-            if (!foundTask) {
-                System.out.println("There is no task with that ID");
-            }
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid input. Please enter a valid task number.");
-        }
-    }
+//    public static void completeTask(String userInputName) {
+//        System.out.println("You are currently logged in as " + userInputName + " and you have the following items on your to do list: ");
+//
+//        for (Task element : TodoApp.taskList) {
+//            if (element.assignedToUser.equals(userInputName)) {
+//
+//                if (element.isComplete) {
+//                    System.out.println("- " + element.getId() + " - " + element.name + " - completed by " + element.assignedToUser);
+//                } else {
+//                    System.out.println("- " + element.getId() + " - " + element.name + " - incomplete, assigned to " + element.assignedToUser);
+//                }
+//            }
+//        }
+//
+//        System.out.println("Please enter the ID of the task you would like to complete:");
+//
+//        String userInputTaskNumber = scanner.next();
+//        scanner.nextLine(); // Without this line the program gets confused and acts as if I gave it an empty string as a command.
+//
+//        try {
+//            int taskNumber = Integer.parseInt(userInputTaskNumber);
+//
+//            boolean foundTask = false;
+//            for (Task task : TodoApp.taskList) {
+//                if (task.getId() == taskNumber && !task.isComplete) {
+//                    task.isComplete = true;
+//                    foundTask = true;
+//                    System.out.println("Congratulations, you completed: " + task.name);
+//                    break;
+//                } else if (task.getId() == taskNumber && task.isComplete) {
+//                    System.out.println("You already completed " + task.name);
+//                    foundTask = true;
+//                }
+//            }
+//            if (!foundTask) {
+//                System.out.println("There is no task with that ID");
+//            }
+//        } catch (NumberFormatException e) {
+//            System.out.println("Invalid input. Please enter a valid task number.");
+//        }
+//    }
 
     public static void listTasks(String userInputName) {
         System.out.println("You are currently logged in as " + userInputName);
@@ -234,7 +234,7 @@ public class Main {
                             } else if (userInput.equals("delete")) {
                                 deleteTask(userInputName);
                             } else if (userInput.equals("complete")) {
-                                completeTask(userInputName);
+                                CLI.completeTaskCLI(userInputName);
                             } else if (userInput.equals("list")) {
                                 listTasks(userInputName);
                             } else if (userInput.equals("exit")) {
