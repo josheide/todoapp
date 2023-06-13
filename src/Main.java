@@ -1,6 +1,3 @@
-// Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
-// then press Enter. You can now see whitespace characters in your code.
-
 import java.util.*;
 import java.io.*;
 import java.util.List;
@@ -17,22 +14,6 @@ public class Main {
             }
         }
         return false;
-    }
-
-    public static void listTasks(String userInputName) {
-        System.out.println("You are currently logged in as " + userInputName);
-
-        if (TodoApp.taskList.size() == 0) {
-            System.out.println("Your to-do list is empty. Please add an item to your list using the 'add' command!");
-        } else {
-            if (!userInputName.isEmpty()) {
-                for (Task element : TodoApp.taskList) {
-                    if (element.assignedToUser.equals(userInputName)) {
-                        System.out.println("- " + element.getId() + " - " + element.name + " - " + (element.isComplete ? "completed" : "incomplete") + " - assigned to " + element.assignedToUser);
-                    }
-                }
-            }
-        }
     }
 
     public static void loginAction() {
@@ -140,7 +121,7 @@ public class Main {
                             } else if (userInput.equals("complete")) {
                                 CLI.completeTaskCLI(userInputName);
                             } else if (userInput.equals("list")) {
-                                listTasks(userInputName);
+                                CLI.listTaskCLI(userInputName);
                             } else if (userInput.equals("exit")) {
                                 TodoApp.exitAndSave();
                                 break;

@@ -7,7 +7,7 @@ public class CLI {
 
     static Scanner scanner = new Scanner(System.in);
 
-    public static void printWelcomeMessage() {
+    public static void printWelcomeMessage () {
         String filePathWelcome = "welcomeText.txt";
         try (BufferedReader reader = new BufferedReader(new FileReader(filePathWelcome))) {
             String line;
@@ -19,7 +19,7 @@ public class CLI {
         }
     }
 
-    public static void printOpeningMessage() {
+    public static void printOpeningMessage () {
         System.out.println("Welcome! What would you like to do?");
         System.out.println("1. Add a new user");
         System.out.println("2. Delete an existing user");
@@ -28,7 +28,8 @@ public class CLI {
         System.out.println(" ");
     }
 
-    public static void addTaskCLI(String userInputName) {
+    public static void addTaskCLI (String userInputName) {
+
         System.out.println("You are currently logged in as " + userInputName);
         System.out.println("Please type the task that you would like to add!");
         String userTask = scanner.nextLine();
@@ -41,11 +42,19 @@ public class CLI {
         System.out.println(userTask + " has been added with the unique identifier: " + task.getId());
     }
 
-    public static void completeTaskCLI(String userInputName) {
+    public static void listTaskCLI (String userInputName) {
+
         System.out.println("You are currently logged in as " + userInputName + " and you have the following items on your to do list: ");
 
-        boolean foundTasks = false;
+        if (TodoApp.taskList.size() == 0) {
+            System.out.println("Your to-do list is empty. Please add an item to your list using the 'add' command!");
+        }
 
+        listTasksForUser(userInputName);
+    }
+
+    public static void listTasksForUser(String userInputName) {
+        boolean foundTasks = false;
         for (Task element : TodoApp.taskList) {
             if (element.assignedToUser.equals(userInputName) && element.isComplete) {
                 System.out.println("- " + element.getId() + " - " + element.name + " - completed by " + element.assignedToUser);
@@ -56,59 +65,49 @@ public class CLI {
                 foundTasks = true;
             }
         }
-
         if (!foundTasks) {
             System.out.println("There are no tasks saved for the user: " + userInputName);
         }
+    }
 
-            System.out.println("Please enter the ID of the task you would like to complete:");
-            String userInputTaskNumber = scanner.next();
-            scanner.nextLine(); // This is important, do not delete!
+    public static void completeTaskCLI (String userInputName) {
 
-            int taskNumber = Integer.parseInt(userInputTaskNumber);
+        System.out.println("You are currently logged in as " + userInputName + " and you have the following items on your to do list: ");
 
-            boolean taskCompleteSuccess = TodoApp.completeTask(taskNumber);
+        listTasksForUser(userInputName);
 
-            if (taskCompleteSuccess == false) {
-                System.out.println("Something went wrong.");
-                return;
-            }
+        System.out.println("Please enter the ID of the task you would like to complete:");
+        String userInputTaskNumber = scanner.next();
+        scanner.nextLine(); // This is important, do not delete!
 
-            System.out.println("Task " + taskNumber + " has been successfully completed.");
+        int taskNumber = Integer.parseInt(userInputTaskNumber);
+
+        boolean taskCompleteSuccess = TodoApp.completeTask(taskNumber);
+
+        if (taskCompleteSuccess == false) {
+            System.out.println("Something went wrong.");
+            return;
+        }
+
+        System.out.println("Task " + taskNumber + " has been successfully completed.");
 
     }
 
     public static void deleteTaskCLI(String userInputName){
         System.out.println("You are currently logged in as " + userInputName + " and you have the following items on your to-do list:");
 
-        boolean foundTasks = false;
+        listTasksForUser(userInputName);
 
-        for (Task element : TodoApp.taskList) {
-            if (element.assignedToUser.equals(userInputName) && element.isComplete) {
-                System.out.println("- " + element.getId() + " - " + element.name + " - completed by " + element.assignedToUser);
-                foundTasks = true;
+        System.out.println("Please enter the ID of the task you would like to remove:");
+        String userInputTaskNumber = scanner.next();
+        scanner.nextLine();
 
-            } else if (element.assignedToUser.equals(userInputName) && !element.isComplete) {
-                System.out.println("- " + element.getId() + " - " + element.name + " - incomplete, assigned to " + element.assignedToUser);
-                foundTasks = true;
-            }
+        int taskNumber = Integer.parseInt(userInputTaskNumber);
+
+        boolean taskDeleteSuccess = TodoApp.deleteTask(taskNumber, userInputName);
+
+        if (taskDeleteSuccess == false) {
+            System.out.println("Something went wrong.");
         }
-
-        if (!foundTasks) {
-            System.out.println("There are no tasks saved for the user: " + userInputName);
-        }
-
-            System.out.println("Please enter the ID of the task you would like to remove:");
-            String userInputTaskNumber = scanner.next();
-            scanner.nextLine();
-
-            int taskNumber = Integer.parseInt(userInputTaskNumber);
-
-            boolean taskDeleteSuccess = TodoApp.deleteTask(taskNumber, userInputName);
-
-            if (taskDeleteSuccess == false) {
-                System.out.println("Something went wrong.");
-                return;
-            }
     }
 }
