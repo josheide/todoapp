@@ -1,21 +1,14 @@
 // Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
 // then press Enter. You can now see whitespace characters in your code.
-import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+
 import java.util.*;
 import java.io.*;
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
 
 public class Main {
 
     static ArrayList<User> userArrayList = new ArrayList<User>();
     static Scanner scanner = new Scanner(System.in);
-
-
 
     public static boolean authenticateUser(String username, String password) {
         for (User element : userArrayList) {
@@ -25,95 +18,6 @@ public class Main {
         }
         return false;
     }
-
-    public static void deleteTask(String userInputName) {
-        System.out.println("You are currently logged in as " + userInputName + " and you have the following items on your to do list: ");
-
-        if (!userInputName.isEmpty()) {
-            boolean foundUser = false;
-
-            for (Task element : TodoApp.taskList) {
-                if (element.assignedToUser.equals(userInputName)) {
-                    foundUser = true;
-
-                    if (element.isComplete) {
-                        System.out.println("- " + element.getId() + " - " + element.name + " - completed by " + element.assignedToUser);
-                    } else {
-                        System.out.println("- " + element.getId() + " - " + element.name + " - incomplete, assigned to " + element.assignedToUser);
-                    }
-                }
-            }
-            if (!foundUser) {
-                System.out.println("There are no tasks saved for the user: " + userInputName);
-            } else {
-                System.out.println("Please enter the ID of the task you would like to remove:");
-
-                String userInputTaskNumber = scanner.next();
-                scanner.nextLine(); // Without this line the program gets confused and immediately spits out "Sorry, I did not catch that"
-
-                try {
-                    int taskNumber = Integer.parseInt(userInputTaskNumber);
-
-                    boolean foundTask = false;
-                    for (Task task : TodoApp.taskList) {
-                        if (task.getId() == taskNumber && task.assignedToUser.equals(userInputName)) {
-                            TodoApp.taskList.remove(task);
-                            foundTask = true;
-                            System.out.println(task.name + " has been removed from the to-do list.");
-                            break;
-                        }
-                    }
-                    if (!foundTask) {
-                        System.out.println("This task is not currently on the to-do list.");
-                    }
-                } catch (NumberFormatException e) {
-                    System.out.println("Invalid input. Please enter a valid task number.");
-                }
-            }
-        }
-    }
-
-//    public static void completeTask(String userInputName) {
-//        System.out.println("You are currently logged in as " + userInputName + " and you have the following items on your to do list: ");
-//
-//        for (Task element : TodoApp.taskList) {
-//            if (element.assignedToUser.equals(userInputName)) {
-//
-//                if (element.isComplete) {
-//                    System.out.println("- " + element.getId() + " - " + element.name + " - completed by " + element.assignedToUser);
-//                } else {
-//                    System.out.println("- " + element.getId() + " - " + element.name + " - incomplete, assigned to " + element.assignedToUser);
-//                }
-//            }
-//        }
-//
-//        System.out.println("Please enter the ID of the task you would like to complete:");
-//
-//        String userInputTaskNumber = scanner.next();
-//        scanner.nextLine(); // Without this line the program gets confused and acts as if I gave it an empty string as a command.
-//
-//        try {
-//            int taskNumber = Integer.parseInt(userInputTaskNumber);
-//
-//            boolean foundTask = false;
-//            for (Task task : TodoApp.taskList) {
-//                if (task.getId() == taskNumber && !task.isComplete) {
-//                    task.isComplete = true;
-//                    foundTask = true;
-//                    System.out.println("Congratulations, you completed: " + task.name);
-//                    break;
-//                } else if (task.getId() == taskNumber && task.isComplete) {
-//                    System.out.println("You already completed " + task.name);
-//                    foundTask = true;
-//                }
-//            }
-//            if (!foundTask) {
-//                System.out.println("There is no task with that ID");
-//            }
-//        } catch (NumberFormatException e) {
-//            System.out.println("Invalid input. Please enter a valid task number.");
-//        }
-//    }
 
     public static void listTasks(String userInputName) {
         System.out.println("You are currently logged in as " + userInputName);
@@ -232,7 +136,7 @@ public class Main {
                             } else if (userInput.equals("add")) {
                                 CLI.addTaskCLI(userInputName);
                             } else if (userInput.equals("delete")) {
-                                deleteTask(userInputName);
+                                CLI.deleteTaskCLI(userInputName);
                             } else if (userInput.equals("complete")) {
                                 CLI.completeTaskCLI(userInputName);
                             } else if (userInput.equals("list")) {

@@ -44,31 +44,71 @@ public class CLI {
     public static void completeTaskCLI(String userInputName) {
         System.out.println("You are currently logged in as " + userInputName + " and you have the following items on your to do list: ");
 
-        for (Task element : TodoApp.taskList) {
-            if (element.assignedToUser.equals(userInputName)) {
+        boolean foundTasks = false;
 
-                if (element.isComplete) {
-                    System.out.println("- " + element.getId() + " - " + element.name + " - completed by " + element.assignedToUser);
-                } else {
-                    System.out.println("- " + element.getId() + " - " + element.name + " - incomplete, assigned to " + element.assignedToUser);
-                }
+        for (Task element : TodoApp.taskList) {
+            if (element.assignedToUser.equals(userInputName) && element.isComplete) {
+                System.out.println("- " + element.getId() + " - " + element.name + " - completed by " + element.assignedToUser);
+                foundTasks = true;
+
+            } else if (element.assignedToUser.equals(userInputName) && !element.isComplete) {
+                System.out.println("- " + element.getId() + " - " + element.name + " - incomplete, assigned to " + element.assignedToUser);
+                foundTasks = true;
             }
         }
 
-        System.out.println("Please enter the ID of the task you would like to complete:");
-        String userInputTaskNumber = scanner.next();
-        scanner.nextLine(); // This is important, do not delete!
-
-        int taskNumber = Integer.parseInt(userInputTaskNumber);
-
-        boolean taskCompleteSuccess = TodoApp.completeTask(taskNumber);
-
-        if (taskCompleteSuccess == false) {
-            System.out.println("Something went wrong.");
-            return;
+        if (!foundTasks) {
+            System.out.println("There are no tasks saved for the user: " + userInputName);
         }
 
-        System.out.println("Task " + taskNumber + " has been successfully completed.");
+            System.out.println("Please enter the ID of the task you would like to complete:");
+            String userInputTaskNumber = scanner.next();
+            scanner.nextLine(); // This is important, do not delete!
 
+            int taskNumber = Integer.parseInt(userInputTaskNumber);
+
+            boolean taskCompleteSuccess = TodoApp.completeTask(taskNumber);
+
+            if (taskCompleteSuccess == false) {
+                System.out.println("Something went wrong.");
+                return;
+            }
+
+            System.out.println("Task " + taskNumber + " has been successfully completed.");
+
+    }
+
+    public static void deleteTaskCLI(String userInputName){
+        System.out.println("You are currently logged in as " + userInputName + " and you have the following items on your to-do list:");
+
+        boolean foundTasks = false;
+
+        for (Task element : TodoApp.taskList) {
+            if (element.assignedToUser.equals(userInputName) && element.isComplete) {
+                System.out.println("- " + element.getId() + " - " + element.name + " - completed by " + element.assignedToUser);
+                foundTasks = true;
+
+            } else if (element.assignedToUser.equals(userInputName) && !element.isComplete) {
+                System.out.println("- " + element.getId() + " - " + element.name + " - incomplete, assigned to " + element.assignedToUser);
+                foundTasks = true;
+            }
+        }
+
+        if (!foundTasks) {
+            System.out.println("There are no tasks saved for the user: " + userInputName);
+        }
+
+            System.out.println("Please enter the ID of the task you would like to remove:");
+            String userInputTaskNumber = scanner.next();
+            scanner.nextLine();
+
+            int taskNumber = Integer.parseInt(userInputTaskNumber);
+
+            boolean taskDeleteSuccess = TodoApp.deleteTask(taskNumber, userInputName);
+
+            if (taskDeleteSuccess == false) {
+                System.out.println("Something went wrong.");
+                return;
+            }
     }
 }

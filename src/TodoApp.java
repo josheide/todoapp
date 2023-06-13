@@ -25,6 +25,7 @@ public class TodoApp {
     }
 
     public static boolean completeTask (int taskNumber){
+
         for (Task task : taskList) {
             if (task.getId() != taskNumber) {
                 // Not the task we are looking for.
@@ -39,6 +40,18 @@ public class TodoApp {
             return true;
         }
         // not found
+        return false;
+    }
+
+    public static boolean deleteTask (int taskNumber, String userInputName) {
+
+        for (Task task : taskList) {
+            if (task.getId() == taskNumber && task.assignedToUser.equals(userInputName)) {
+
+                taskList.remove(task);
+                return true;
+            }
+        }
         return false;
     }
 
