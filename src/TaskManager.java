@@ -2,7 +2,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.util.ArrayList;
 
-public class TodoApp {
+public class TaskManager {
 
     static ArrayList<Task> taskList = new ArrayList<Task>();
     static int nextID = 1;

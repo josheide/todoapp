@@ -20,7 +20,7 @@ public class GUI {
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                TodoApp.exitAndSave();
+                TaskManager.exitAndSave();
                 frame.dispose();
             }
         });
@@ -36,7 +36,7 @@ public class GUI {
         taskPanel.setLayout(new BoxLayout(taskPanel, BoxLayout.Y_AXIS));
         JScrollPane scrollPane = new JScrollPane(taskPanel);
 
-        for (Task task : TodoApp.taskList) {
+        for (Task task : TaskManager.taskList) {
             if (task.getAssignedToUser().equals(userInputName)) {
                 JCheckBox checkBox = GUI.createCheckBox(task);
                 taskPanel.add(checkBox);
@@ -54,7 +54,7 @@ public class GUI {
                 String taskName = JOptionPane.showInputDialog(frame, "Enter task name:");
                 if (taskName != null && !taskName.isEmpty()) {
 
-                    Task newTask = TodoApp.addTask(userInputName, taskName);
+                    Task newTask = TaskManager.addTask(userInputName, taskName);
 
                     if (newTask == null) {
                         //TODO: Display error to user.

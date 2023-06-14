@@ -7,6 +7,35 @@ public class CLI {
 
     static Scanner scanner = new Scanner(System.in);
 
+    public static void loginActionCLI() {
+        boolean exit = false;
+        while (!exit) {
+            CLI.printOpeningMessage();
+            System.out.println("Please enter your choice (the number!): ");
+            int choice = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (choice) {
+                case 1:
+                    CLI.addUserCLI();
+                    break;
+                case 2:
+                    CLI.deleteUserCLI();
+                    break;
+                case 3:
+                    Main.login();
+                    exit = true;
+                    break;
+                case 4:
+                    exit = true;
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please try again!");
+                    break;
+            }
+        }
+    }
+
     public static void printWelcomeMessage () {
         String filePathWelcome = "welcomeText.txt";
         try (BufferedReader reader = new BufferedReader(new FileReader(filePathWelcome))) {
@@ -34,7 +63,7 @@ public class CLI {
         System.out.println("Please type the task that you would like to add!");
         String userTask = scanner.nextLine();
 
-        Task task = TodoApp.addTask(userInputName, userTask);
+        Task task = TaskManager.addTask(userInputName, userTask);
         if (task == null) {
             System.out.println("Something went wrong.");
             return;
@@ -46,7 +75,7 @@ public class CLI {
 
         System.out.println("You are currently logged in as " + userInputName + " and you have the following items on your to do list: ");
 
-        if (TodoApp.taskList.size() == 0) {
+        if (TaskManager.taskList.size() == 0) {
             System.out.println("Your to-do list is empty. Please add an item to your list using the 'add' command!");
         }
 
@@ -55,7 +84,7 @@ public class CLI {
 
     public static void listTasksForUser(String userInputName) {
         boolean foundTasks = false;
-        for (Task element : TodoApp.taskList) {
+        for (Task element : TaskManager.taskList) {
             if (element.assignedToUser.equals(userInputName) && element.isComplete) {
                 System.out.println("- " + element.getId() + " - " + element.name + " - completed by " + element.assignedToUser);
                 foundTasks = true;
@@ -82,7 +111,7 @@ public class CLI {
 
         int taskNumber = Integer.parseInt(userInputTaskNumber);
 
-        boolean taskCompleteSuccess = TodoApp.completeTask(taskNumber);
+        boolean taskCompleteSuccess = TaskManager.completeTask(taskNumber);
 
         if (taskCompleteSuccess == false) {
             System.out.println("Something went wrong.");
@@ -104,10 +133,60 @@ public class CLI {
 
         int taskNumber = Integer.parseInt(userInputTaskNumber);
 
-        boolean taskDeleteSuccess = TodoApp.deleteTask(taskNumber, userInputName);
+        boolean taskDeleteSuccess = TaskManager.deleteTask(taskNumber, userInputName);
 
         if (taskDeleteSuccess == false) {
             System.out.println("Something went wrong.");
         }
+    }
+
+    //
+    // User management starts here!
+    //
+
+    public static void addUserCLI() {
+        System.out.println("Please enter the username for the new user: ");
+        String userInputName = scanner.nextLine();
+
+        boolean foundUser = false;
+
+        if (!userInputName.isEmpty()) {
+            for (User element : UserManager.userArrayList) {
+                if (element.userName.equals(userInputName)) {
+                    foundUser = true;
+                    System.out.println("Sorry, but " + userInputName + " already has an account registered.");
+                    break;
+                }
+            }
+
+            if (!foundUser) {
+                System.out.println("To register an account, please enter a password!");
+                String userInputPassword = scanner.nextLine();
+
+                System.out.println("Please confirm your password!");
+                String userInputPassword2 = scanner.nextLine();
+
+                boolean addUserSuccess = UserManager.addUser(userInputName, userInputPassword, userInputPassword2);
+
+                if (addUserSuccess == false) {
+                    System.out.println("Something went wrong.");
+                }
+            }
+        }
+    }
+    public static void deleteUserCLI(){
+        System.out.println("Please enter the username of the user to delete: ");
+        String username = scanner.nextLine();
+
+        boolean deleteUserSuccess = UserManager.deleteUser(username);
+
+        if (deleteUserSuccess == true) {
+            System.out.println("User " + username + " has been deleted successfully!");
+        }
+
+        if (deleteUserSuccess == false) {
+            System.out.println("Something went wrong.");
+        }
+
     }
 }
