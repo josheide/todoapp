@@ -73,19 +73,19 @@ public class CLI {
     public static void taskSelector(String userInputName){
         System.out.println("Login successful. Welcome, " +userInputName);
         while(true) {
-            CLI.CLIWelcomeMessage();
+            CLIWelcomeMessage();
             System.out.print("Enter a command (or 'exit' to save and exit): ");
             String userInput = scanner.nextLine();
             if (userInput.equals("GUI")) {
                 GUI.displayTasksGUI(userInputName);
             } else if (userInput.equals("add")) {
-                CLI.addTaskCLI(userInputName);
+                addTaskCLI(userInputName);
             } else if (userInput.equals("delete")) {
-                CLI.deleteTaskCLI(userInputName);
+                deleteTaskCLI(userInputName);
             } else if (userInput.equals("complete")) {
-                CLI.completeTaskCLI(userInputName);
+                completeTaskCLI(userInputName);
             } else if (userInput.equals("list")) {
-                CLI.listTaskCLI(userInputName);
+                listTaskCLI(userInputName);
             } else if (userInput.equals("exit")) {
                 TaskManager.exitAndSave();
                 break;
