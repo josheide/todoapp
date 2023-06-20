@@ -1,89 +1,6 @@
-import java.util.*;
 import java.io.*;
 
 public class Main {
-
-    static Scanner scanner = new Scanner(System.in);
-
-    public static void login() {
-        System.out.println("Please enter your username: ");
-        String userInputName = scanner.nextLine();
-        boolean foundUser = false;
-
-        if (userInputName.isEmpty()) {
-            return;
-        }
-
-        for (User element : UserManager.userArrayList) {
-            if (element.userName.equals(userInputName)) {
-                foundUser = true;
-                break;
-            }
-        }
-
-        if (!foundUser) {
-            System.out.println("Sorry, I could not find " + userInputName );
-            return;
-        }
-
-        System.out.println("Please enter the password for " + userInputName);
-        String userInputPassword = scanner.nextLine();
-        boolean authenticated = UserManager.authenticateUserCLI (userInputName, userInputPassword);
-
-        if (!authenticated) {
-            System.out.println("Invalid password. Please try again.");
-            return;
-        }
-
-        System.out.println("Login successful. Welcome, " +userInputName);
-        while(true) {
-            CLI.printWelcomeMessage();
-            System.out.print("Enter a command (or 'exit' to save and exit): ");
-            String userInput = scanner.nextLine();
-            if (userInput.equals("GUI")) {
-                GUI.displayTasksGUI(userInputName);
-            } else if (userInput.equals("add")) {
-                CLI.addTaskCLI(userInputName);
-            } else if (userInput.equals("delete")) {
-                CLI.deleteTaskCLI(userInputName);
-            } else if (userInput.equals("complete")) {
-                CLI.completeTaskCLI(userInputName);
-            } else if (userInput.equals("list")) {
-                CLI.listTaskCLI(userInputName);
-            } else if (userInput.equals("exit")) {
-                TaskManager.exitAndSave();
-                break;
-            } else {
-                System.out.println("Sorry, I did not catch that!");
-            }
-        }
-    }
-
-    public static void taskSelector(String userInputName){
-        System.out.println("Login successful. Welcome, " +userInputName);
-        while(true) {
-            CLI.printWelcomeMessage();
-            System.out.print("Enter a command (or 'exit' to save and exit): ");
-            String userInput = scanner.nextLine();
-            if (userInput.equals("GUI")) {
-                GUI.displayTasksGUI(userInputName);
-            } else if (userInput.equals("add")) {
-                CLI.addTaskCLI(userInputName);
-            } else if (userInput.equals("delete")) {
-                CLI.deleteTaskCLI(userInputName);
-            } else if (userInput.equals("complete")) {
-                CLI.completeTaskCLI(userInputName);
-            } else if (userInput.equals("list")) {
-                CLI.listTaskCLI(userInputName);
-            } else if (userInput.equals("exit")) {
-                TaskManager.exitAndSave();
-                break;
-            } else {
-                System.out.println("Sorry, I did not catch that!");
-            }
-        }
-
-    }
 
     public static void main(String[] args) {
 
@@ -144,7 +61,7 @@ public class Main {
         TaskManager.nextID = maxID + 1;
 
         while (true) {
-            CLI.loginActionCLI();
+            CLI.userSelectionCLI();
         }
     }
 }
