@@ -5,9 +5,9 @@ import java.util.List;
 public class UserManager {
     static ArrayList<User> userArrayList = new ArrayList<User>();
 
-    public static void loadUsersFromFile() {
-        String userList = "userList.txt";
-        File userListFile = new File(userList);
+    public static void loadUsersFromFile(String userList) {
+
+         File userListFile = new File(userList);
 
         try {
             if (!userListFile.exists()) {
@@ -41,7 +41,7 @@ public class UserManager {
 
     public static boolean addUser(String userInputName, String userInputPassword, String userInputPassword2) {
 
-        loadUsersFromFile();
+//        loadUsersFromFile();
 
         if (userInputPassword.equals(userInputPassword2) && !userInputPassword.isEmpty()) {
             userArrayList.add(new User(userInputName, userInputPassword));

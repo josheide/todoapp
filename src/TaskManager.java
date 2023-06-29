@@ -1,11 +1,49 @@
-import java.io.BufferedWriter;
-import java.io.FileWriter;
+import java.io.*;
 import java.util.ArrayList;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 
 public class TaskManager {
 
     static ArrayList<Task> taskList = new ArrayList<Task>();
     static int nextID = 1;
+
+
+    public static void loadTasksFromFile(String fileName) {
+
+        File todolist = new File(fileName);
+
+        try {
+            if (!todolist.exists()) {
+                todolist.createNewFile();
+            }
+            BufferedReader reader = new BufferedReader(new FileReader(todolist));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] taskData = line.split(" - ");
+                boolean taskHasNoID = taskData.length == 3;
+                int taskID = taskHasNoID ? TaskManager.nextID++ : Integer.parseInt(taskData[0]);
+                String taskName = taskData[taskHasNoID ? 0 : 1];
+                boolean taskIsComplete = Boolean.parseBoolean(taskData[taskHasNoID ? 1 : 2]);
+                String taskUser = taskData[taskHasNoID ? 2 : 3];
+                Task newTask = new Task(taskID, taskName, taskIsComplete, taskUser);
+                TaskManager.taskList.add(newTask);
+            }
+
+            int maxID = 0;
+            for (Task task : TaskManager.taskList) {
+                if (task.getId() > maxID) {
+                    maxID = task.getId();
+                }
+            }
+            TaskManager.nextID = maxID + 1;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public static Task addTask(String userInputName, String userTask) {
         if (userTask.isEmpty()) {
@@ -31,7 +69,7 @@ public class TaskManager {
                 // Not the task we are looking for.
                 continue;
             }
-            // We found the task we are looking for.
+                // We found the task we are looking for.
             if (task.isComplete) {
                 return false; // task exists but you already completed it
             }
