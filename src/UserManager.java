@@ -6,9 +6,7 @@ public class UserManager {
     static ArrayList<User> userArrayList = new ArrayList<User>();
 
     public static void loadUsersFromFile(String userList) {
-
          File userListFile = new File(userList);
-
         try {
             if (!userListFile.exists()) {
                 userListFile.createNewFile();
@@ -30,7 +28,7 @@ public class UserManager {
         }
     }
 
-    public static boolean authenticateUserCLI (String username, String password) {
+    public static boolean authenticateUser(String username, String password) {
         for (User element : UserManager.userArrayList) {
             if (element.userName.equals(username) && element.password.equals(password)) {
                 return true;
@@ -40,12 +38,8 @@ public class UserManager {
     }
 
     public static boolean addUser(String userInputName, String userInputPassword, String userInputPassword2) {
-
-//        loadUsersFromFile();
-
         if (userInputPassword.equals(userInputPassword2) && !userInputPassword.isEmpty()) {
             userArrayList.add(new User(userInputName, userInputPassword));
-
             saveUsers();
             return true;
         }
@@ -67,7 +61,6 @@ public class UserManager {
     }
 
     public static boolean deleteUser(String username) {
-
         boolean userFound = false;
 
         for (User user : UserManager.userArrayList) {

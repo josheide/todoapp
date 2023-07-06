@@ -7,24 +7,27 @@ public class CLI {
 
     static Scanner scanner = new Scanner(System.in);
 
-    public static void userSelectionCLI() {
+    public static void start() {
         boolean exit = false;
         while (!exit) {
-            CLI.printOpeningMessage();
+            printOpeningMessage();
             System.out.println("Please enter your choice (the number!): ");
             int choice = scanner.nextInt();
             scanner.nextLine();
 
             switch (choice) {
                 case 1:
-                    CLI.addUserCLI();
+                    addUserCLI();
                     break;
                 case 2:
-                    CLI.deleteUserCLI();
+                    deleteUserCLI();
                     break;
                 case 3:
-                    login();
-                    exit = true;
+                    String userInputName = readUsername();
+                    boolean loginWasSuccessful = loginCLI(userInputName);
+                    if (loginWasSuccessful) {
+                        startUserSession(userInputName);
+                    }
                     break;
                 case 4:
                     exit = true;
@@ -36,42 +39,8 @@ public class CLI {
         }
     }
 
-    public static void login() {
-        System.out.println("Please enter your username: ");
-        String userInputName = scanner.nextLine();
-        boolean foundUser = false;
-
-        if (userInputName.isEmpty()) {
-            return;
-        }
-
-        for (User element : UserManager.userArrayList) {
-            if (element.userName.equals(userInputName)) {
-                foundUser = true;
-                break;
-            }
-        }
-
-        if (!foundUser) {
-            System.out.println("Sorry, I could not find " + userInputName);
-            return;
-        }
-
-        System.out.println("Please enter the password for " + userInputName);
-        String userInputPassword = scanner.nextLine();
-        boolean authenticated = UserManager.authenticateUserCLI(userInputName, userInputPassword);
-
-        if (!authenticated) {
-            System.out.println("Invalid password. Please try again.");
-            return;
-        }
-
-        taskSelector(userInputName);
-
-    }
-
-    public static void taskSelector(String userInputName){
-        System.out.println("Login successful. Welcome, " +userInputName);
+    public static void startUserSession(String userInputName){
+        System.out.println("Login successful. Welcome, " + userInputName);
         while(true) {
             CLIWelcomeMessage();
             System.out.print("Enter a command (or 'exit' to save and exit): ");
@@ -93,6 +62,41 @@ public class CLI {
                 System.out.println("Sorry, I did not catch that!");
             }
         }
+    }
+
+    public static String readUsername() {
+        System.out.println("Please enter your username: ");
+        String userInputName = scanner.nextLine();
+        return userInputName;
+    }
+
+    public static boolean loginCLI(String userInputName) {
+        if (userInputName.isEmpty()) {
+            return false;
+        }
+
+        boolean foundUser = false;
+        for (User element : UserManager.userArrayList) {
+            if (element.userName.equals(userInputName)) {
+                foundUser = true;
+                break;
+            }
+        }
+
+        if (!foundUser) {
+            System.out.println("Sorry, I could not find " + userInputName);
+            return false;
+        }
+
+        System.out.println("Please enter the password for " + userInputName);
+        String userInputPassword = scanner.nextLine();
+        boolean authenticated = UserManager.authenticateUser(userInputName, userInputPassword);
+
+        if (!authenticated) {
+            System.out.println("Invalid password. Please try again.");
+            return false;
+        }
+        return true;
     }
 
     public static void CLIWelcomeMessage() {

@@ -1,5 +1,3 @@
-import java.io.*;
-
 public class Main {
 
     public static void main(String[] args) {
@@ -12,8 +10,6 @@ public class Main {
         String userList = "userList.txt";
         UserManager.loadUsersFromFile(userList);
 
-        while (true) {
-            CLI.userSelectionCLI();
-        }
+        CLI.start();
     }
 }

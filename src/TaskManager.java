@@ -82,7 +82,6 @@ public class TaskManager {
     }
 
     public static boolean deleteTask (int taskNumber, String userInputName) {
-
         for (Task task : taskList) {
             if (task.getId() == taskNumber && task.assignedToUser.equals(userInputName)) {
 
