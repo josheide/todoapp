@@ -5,7 +5,7 @@ public class Task {
     boolean isComplete;
     String assignedToUser;
 
-    Task(int id, String name, boolean isComplete, String assignedToUser) {
+    public Task(int id, String name, boolean isComplete, String assignedToUser) {
         this.id = id;
         this.name = name;
         this.isComplete = isComplete;
@@ -14,5 +14,14 @@ public class Task {
 
     int getId() {
         return id;
+    }
+    public String getName() {
+        return name;
+    }
+    public String getAssignedToUser() {
+        return assignedToUser;
+    }
+    public boolean isComplete() {
+        return isComplete;
     }
 }
