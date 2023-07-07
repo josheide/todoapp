@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -8,9 +10,7 @@ public class Main {
         String fileNameJSON = "todoListFile.json";
         TaskManager.loadTasksFromFile(fileName);
 
-        String userList = "userList.txt";
-        String userListJSON = "userListJSON.json";
-        UserManager.loadUsersFromFileJSON(userListJSON);
+        UserManager.loadUsers();
 
         CLI.start();
     }
