@@ -5,10 +5,12 @@ public class Main {
         GUI gui = new GUI(); // This will be used later as we pass functionality
 
         String fileName = "todoListFile.txt";
+        String fileNameJSON = "todoListFile.json";
         TaskManager.loadTasksFromFile(fileName);
 
         String userList = "userList.txt";
-        UserManager.loadUsersFromFile(userList);
+        String userListJSON = "userListJSON.json";
+        UserManager.loadUsersFromFileJSON(userListJSON);
 
         CLI.start();
     }

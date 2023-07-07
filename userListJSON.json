@@ -1,0 +1,22 @@
+[
+  {
+    "userName": "Tomi",
+    "password": "asd",
+    "todoItems": [
+      {
+        "id": 1,
+        "taskName": "Task 1",
+        "isComplete": false
+      },
+      {
+        "id": 2,
+        "taskName": "Task 2",
+        "isComplete": true
+      }
+    ]
+  },
+  {
+    "userName": "balazs",
+    "password": "szia"
+  }
+]

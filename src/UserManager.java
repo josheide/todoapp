@@ -1,3 +1,9 @@
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
+
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +34,44 @@ public class UserManager {
         }
     }
 
-    public static boolean authenticateUser(String username, String password) {
+    public static void loadUsersFromFileJSON(String userList) {
+        File userListFile = new File(userList);
+
+        try {
+            if (!userListFile.exists()) {
+                userListFile.createNewFile();
+            }
+
+            BufferedReader reader = new BufferedReader(new FileReader(userListFile));
+            StringBuilder jsonBuilder = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                jsonBuilder.append(line);
+            }
+            reader.close();
+
+            if (jsonBuilder.length() == 0) {
+                System.out.println("The user list file is empty.");
+                return;
+            }
+
+            // Convert the JSON data to a list of users
+            Gson gson = new GsonBuilder().create();
+            User[] users = gson.fromJson(jsonBuilder.toString(), User[].class);
+
+            // Populate the userArrayList
+            userArrayList.clear();
+            for (User user : users) {
+                userArrayList.add(user);
+            }
+
+        } catch (IOException e) {
+            System.out.println("An error occurred while reading the user list file: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+        public static boolean authenticateUser(String username, String password) {
         for (User element : UserManager.userArrayList) {
             if (element.userName.equals(username) && element.password.equals(password)) {
                 return true;
@@ -40,7 +83,7 @@ public class UserManager {
     public static boolean addUser(String userInputName, String userInputPassword, String userInputPassword2) {
         if (userInputPassword.equals(userInputPassword2) && !userInputPassword.isEmpty()) {
             userArrayList.add(new User(userInputName, userInputPassword));
-            saveUsers();
+            saveUsersJSON();
             return true;
         }
         return false;
@@ -59,6 +102,23 @@ public class UserManager {
             e.printStackTrace();
         }
     }
+
+    public static void saveUsersJSON() {
+        String filePath = "userListJSON.json";
+        try {
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            String json = gson.toJson(userArrayList);
+
+            BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
+            writer.write(json);
+            writer.close();
+
+        } catch (IOException e) {
+            System.out.println("An error occurred while writing to the file.");
+            e.printStackTrace();
+        }
+    }
+
 
     public static boolean deleteUser(String username) {
         boolean userFound = false;
@@ -82,7 +142,7 @@ public class UserManager {
         }
         TaskManager.taskList.removeAll(tasksToRemove);
         TaskManager.exitAndSave();
-        saveUsers();
+        saveUsersJSON();
         return true; // user and tasks were found and deleted
     }
 }
