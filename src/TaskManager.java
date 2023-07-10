@@ -1,90 +1,40 @@
 import java.io.*;
 import java.util.ArrayList;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.util.List;
 
 public class TaskManager {
-
+    static boolean useJSON = true;
     static ArrayList<Task> taskList = new ArrayList<Task>();
-    static int nextID = 1;
 
-
-    public static void loadTasksFromFile(String fileName) {
-
-        File todolist = new File(fileName);
-
-        try {
-            if (!todolist.exists()) {
-                todolist.createNewFile();
-            }
-            BufferedReader reader = new BufferedReader(new FileReader(todolist));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] taskData = line.split(" - ");
-                boolean taskHasNoID = taskData.length == 3;
-                int taskID = taskHasNoID ? TaskManager.nextID++ : Integer.parseInt(taskData[0]);
-                String taskName = taskData[taskHasNoID ? 0 : 1];
-                boolean taskIsComplete = Boolean.parseBoolean(taskData[taskHasNoID ? 1 : 2]);
-                String taskUser = taskData[taskHasNoID ? 2 : 3];
-                Task newTask = new Task(taskID, taskName, taskIsComplete, taskUser);
-                TaskManager.taskList.add(newTask);
-            }
-
-            int maxID = 0;
-            for (Task task : TaskManager.taskList) {
-                if (task.getId() > maxID) {
-                    maxID = task.getId();
-                }
-            }
-            TaskManager.nextID = maxID + 1;
-
-        } catch (IOException e) {
-            e.printStackTrace();
+    public static void loadTasks() {
+        if (useJSON) {
+            String tasksFileName = "taskListJSON.json";
+            taskList = JSONTaskDataSource.loadTasksFromFile(tasksFileName);
+        } else {
+            String tasksFileName = "taskList.txt";
+            taskList = TextFileDataSource.loadTasksFromFile(tasksFileName);
         }
     }
 
-    public static Task addTask(String userInputName, String userTask) {
-        if (userTask.isEmpty()) {
-//            return "You cannot enter an empty field as a task, please try again!";
-            return null;
+    public static void saveTasks() {
+        if (useJSON) {
+            JSONTaskDataSource.saveTasksToFile(taskList);
         }
-
-        if (userInputName.isEmpty()) {
-//            return "You cannot enter an empty user name, please try again!";
-            return null;
+        else {
+            TextFileDataSource.saveTasksToFile(taskList);
         }
-
-        Task newTask = new Task(nextID, userTask, false, userInputName);
-        taskList.add(newTask);
-        nextID++;
-        return newTask;
     }
 
-    public static boolean completeTask (int taskNumber){
+    public static Task addTask(String assignedToUser, String taskName) {
+        int taskId = generateTaskId();
+        Task task = new Task(taskId, taskName, assignedToUser);
+        taskList.add(task);
+        return task;
+    }
 
+    public static boolean deleteTask(int taskId, String assignedToUser) {
         for (Task task : taskList) {
-            if (task.getId() != taskNumber) {
-                // Not the task we are looking for.
-                continue;
-            }
-                // We found the task we are looking for.
-            if (task.isComplete) {
-                return false; // task exists but you already completed it
-            }
-
-            task.isComplete = true;
-            return true;
-        }
-        // not found
-        return false;
-    }
-
-    public static boolean deleteTask (int taskNumber, String userInputName) {
-        for (Task task : taskList) {
-            if (task.getId() == taskNumber && task.assignedToUser.equals(userInputName)) {
-
+            if (task.getId() == taskId && task.getAssignedToUser().equals(assignedToUser)) {
                 taskList.remove(task);
                 return true;
             }
@@ -92,19 +42,41 @@ public class TaskManager {
         return false;
     }
 
-    public static void exitAndSave() {
-        String filePath = "todoListFile.txt";
-        try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
-            for (Task task : taskList) {
-                writer.write(task.getId() + " - " + task.name + " - " + task.isComplete + " - " + task.assignedToUser + "\n");
+    public static boolean completeTask(int taskId, String assignedToUser) {
+        for (Task task : taskList) {
+            if (task.getId() == taskId && task.getAssignedToUser().equals(assignedToUser)) {
+                task.setComplete(true);
+                return true;
             }
-            writer.close(); // VERY IMPORTANT, otherwise the save is not complete
-
-        } catch (Exception e) {
-            //TODO: Exception should not be handled here.
-            System.out.println("An error occurred while writing to the file.");
-            e.printStackTrace();
         }
+        return false;
+    }
+
+    public static void listTasksForUser(String assignedToUser) {
+        boolean foundTasks = false;
+        for (Task task : taskList) {
+            if (task.getAssignedToUser().equals(assignedToUser)) {
+                System.out.println("- " + task.getId() + " - " + task.getName() + " - " + (task.isComplete() ? "Completed" : "Incomplete"));
+                foundTasks = true;
+            }
+        }
+        if (!foundTasks) {
+            System.out.println("There are no tasks for the user: " + assignedToUser);
+        }
+    }
+
+    public static void exitAndSave() {
+        saveTasks();
+        System.out.println("Task list has been saved.");
+    }
+
+    private static int generateTaskId() {
+        int maxId = 0;
+        for (Task task : taskList) {
+            if (task.getId() > maxId) {
+                maxId = task.getId();
+            }
+        }
+        return maxId + 1;
     }
 }

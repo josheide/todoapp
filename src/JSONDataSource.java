@@ -28,11 +28,9 @@ public class JSONDataSource {
                 return userArrayList;
             }
 
-            // Convert the JSON data to a list of users
             Gson gson = new GsonBuilder().create();
             User[] users = gson.fromJson(jsonBuilder.toString(), User[].class);
 
-            // Populate the userArrayList
             userArrayList.clear();
             for (User user : users) {
                 userArrayList.add(user);

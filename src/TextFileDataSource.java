@@ -40,4 +40,33 @@ public class TextFileDataSource {
             e.printStackTrace();
         }
     }
+
+    // TASKS
+
+    public static ArrayList<Task> loadTasksFromFile(String fileName) {
+
+        ArrayList<Task> taskArrayList = new ArrayList<>();
+        File todolist = new File(fileName);
+
+        try {
+            if (!todolist.exists()) {
+                todolist.createNewFile();
+            }
+            BufferedReader reader = new BufferedReader(new FileReader(todolist));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] taskData = line.split(" - ");
+                int taskID = Integer.parseInt(taskData[0]);
+                String taskName = taskData[1];
+                boolean taskIsComplete = Boolean.parseBoolean(taskData[2]);
+                String taskUser = taskData[3];
+                Task newTask = new Task(taskID, taskName, taskIsComplete, taskUser);
+                TaskManager.taskList.add(newTask);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return taskArrayList;
+    }
 }

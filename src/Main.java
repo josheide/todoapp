@@ -8,7 +8,7 @@ public class Main {
 
         String fileName = "todoListFile.txt";
         String fileNameJSON = "todoListFile.json";
-        TaskManager.loadTasksFromFile(fileName);
+        TextFileDataSource.loadTasksFromFile(fileName);
 
         UserManager.loadUsers();
 
