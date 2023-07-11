@@ -1,0 +1,56 @@
+[
+  {
+    "id": 1,
+    "name": "Fozes",
+    "isComplete": false,
+    "assignedToUser": "Tomi"
+  },
+  {
+    "id": 3,
+    "name": "Kuka",
+    "isComplete": false,
+    "assignedToUser": "Balazs"
+  },
+  {
+    "id": 4,
+    "name": "Mosast hozd fel",
+    "isComplete": false,
+    "assignedToUser": "Tomi"
+  },
+  {
+    "id": 5,
+    "name": "Bevasarlas",
+    "isComplete": false,
+    "assignedToUser": "Tomi"
+  },
+  {
+    "id": 6,
+    "name": "Fozes",
+    "isComplete": true,
+    "assignedToUser": "Tomi"
+  },
+  {
+    "id": 8,
+    "name": "Mesi",
+    "isComplete": false,
+    "assignedToUser": "Tomi"
+  },
+  {
+    "id": 9,
+    "name": "Sori",
+    "isComplete": false,
+    "assignedToUser": "Tomi"
+  },
+  {
+    "id": 10,
+    "name": "Kod takaritas",
+    "isComplete": false,
+    "assignedToUser": "Tomi"
+  },
+  {
+    "id": 11,
+    "name": "ECDL vizsga",
+    "isComplete": false,
+    "assignedToUser": "Tomi"
+  }
+]

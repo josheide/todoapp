@@ -20,7 +20,7 @@ public class GUI {
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                TaskManager.exitAndSave();
+                TaskManager.saveTasks();
                 frame.dispose();
             }
         });

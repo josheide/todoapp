@@ -1,6 +1,4 @@
-import java.io.*;
 import java.util.ArrayList;
-import java.util.List;
 
 public class TaskManager {
     static boolean useJSON = true;
@@ -11,7 +9,7 @@ public class TaskManager {
             String tasksFileName = "taskListJSON.json";
             taskList = JSONTaskDataSource.loadTasksFromFile(tasksFileName);
         } else {
-            String tasksFileName = "taskList.txt";
+            String tasksFileName = "todoListFile.txt";
             taskList = TextFileDataSource.loadTasksFromFile(tasksFileName);
         }
     }
@@ -19,15 +17,18 @@ public class TaskManager {
     public static void saveTasks() {
         if (useJSON) {
             JSONTaskDataSource.saveTasksToFile(taskList);
+            System.out.println("Task list has been saved.");
+
         }
         else {
             TextFileDataSource.saveTasksToFile(taskList);
+            System.out.println("Task list has been saved.");
         }
     }
 
     public static Task addTask(String assignedToUser, String taskName) {
         int taskId = generateTaskId();
-        Task task = new Task(taskId, taskName, assignedToUser);
+        Task task = new Task(taskId, taskName, false, assignedToUser);
         taskList.add(task);
         return task;
     }
@@ -45,29 +46,11 @@ public class TaskManager {
     public static boolean completeTask(int taskId, String assignedToUser) {
         for (Task task : taskList) {
             if (task.getId() == taskId && task.getAssignedToUser().equals(assignedToUser)) {
-                task.setComplete(true);
+                task.isComplete = true ;
                 return true;
             }
         }
         return false;
-    }
-
-    public static void listTasksForUser(String assignedToUser) {
-        boolean foundTasks = false;
-        for (Task task : taskList) {
-            if (task.getAssignedToUser().equals(assignedToUser)) {
-                System.out.println("- " + task.getId() + " - " + task.getName() + " - " + (task.isComplete() ? "Completed" : "Incomplete"));
-                foundTasks = true;
-            }
-        }
-        if (!foundTasks) {
-            System.out.println("There are no tasks for the user: " + assignedToUser);
-        }
-    }
-
-    public static void exitAndSave() {
-        saveTasks();
-        System.out.println("Task list has been saved.");
     }
 
     private static int generateTaskId() {

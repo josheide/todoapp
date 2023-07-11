@@ -56,7 +56,7 @@ public class CLI {
             } else if (userInput.equals("list")) {
                 listTaskCLI(userInputName);
             } else if (userInput.equals("exit")) {
-                TaskManager.exitAndSave();
+                TaskManager.saveTasks();
                 break;
             } else {
                 System.out.println("Sorry, I did not catch that!");
@@ -174,7 +174,7 @@ public class CLI {
 
         int taskNumber = Integer.parseInt(userInputTaskNumber);
 
-        boolean taskCompleteSuccess = TaskManager.completeTask(taskNumber);
+        boolean taskCompleteSuccess = TaskManager.completeTask(taskNumber, userInputName);
 
         if (taskCompleteSuccess == false) {
             System.out.println("Something went wrong.");
@@ -203,7 +203,7 @@ public class CLI {
         }
     }
 
-    /// User management starts here! ///
+    /// USER MANAGEMENT ///
 
     public static void addUserCLI() {
         System.out.println("Please enter the username for the new user: ");

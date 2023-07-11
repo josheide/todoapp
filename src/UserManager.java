@@ -62,7 +62,7 @@ public class UserManager {
             }
         }
         TaskManager.taskList.removeAll(tasksToRemove);
-        TaskManager.exitAndSave();
+        TaskManager.saveTasks();
         saveUsers();
         return true; // user and tasks were found and deleted
     }

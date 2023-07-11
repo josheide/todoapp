@@ -41,7 +41,7 @@ public class TextFileDataSource {
         }
     }
 
-    // TASKS
+    /// TASKS MANAGEMENT ///
 
     public static ArrayList<Task> loadTasksFromFile(String fileName) {
 
@@ -68,5 +68,21 @@ public class TextFileDataSource {
             e.printStackTrace();
         }
         return taskArrayList;
+    }
+
+    public static void saveTasksToFile(ArrayList<Task> taskList) {
+        String filePath = "todoListFile.txt";
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
+            for (Task task : taskList) {
+                writer.write(task.getId() + " - " + task.name + " - " + task.isComplete + " - " + task.assignedToUser + "\n");
+            }
+            writer.close(); // VERY IMPORTANT, otherwise the save is not complete
+
+        } catch (Exception e) {
+            //TODO: Exception should not be handled here.
+            System.out.println("An error occurred while writing to the file.");
+            e.printStackTrace();
+        }
     }
 }
